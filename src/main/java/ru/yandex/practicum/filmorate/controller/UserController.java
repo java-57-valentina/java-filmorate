@@ -5,7 +5,7 @@ import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.exception.ConditionsNotMetException;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
-import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.User;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -13,55 +13,58 @@ import java.util.Map;
 
 @Slf4j
 @RestController
-@RequestMapping("/films")
-public class FilmController {
+@RequestMapping("/users")
+public class UserController {
 
-    private final Map<Long, Film> films = new HashMap<>();
+    private final Map<Long, User> users = new HashMap<>();
 
     @GetMapping
-    public Collection<Film> getAll() {
-        return films.values();
+    Collection<User> getAll() {
+        return users.values();
     }
 
     @PostMapping
-    public Film create(@RequestBody Film film) {
+    public  User create(@RequestBody User user) {
+
         try {
-            film.validate();
+            user.validate();
         } catch (ValidationException e) {
             log.warn(e.getMessage());
             throw e;
         }
 
-        final long id = getNextId();
-        film.setId(id);
-        films.put(id, film);
-        log.info("Film id:{} was added: {}", id, film);
-        return film;
+        user.setId(getNextId());
+        if (user.getName() == null || user.getName().isBlank())
+            user.setName(user.getLogin());
+
+        users.put(user.getId(), user);
+        log.info("User id:{} was added: {}", user.getId(), user);
+        return user;
     }
 
     @PutMapping
-    public Film update(@RequestBody Film film) {
-        if (film.getId() == null)
+    public User update(@RequestBody User user) {
+
+        if (user.getId() == null)
             throw new ConditionsNotMetException("Id должен быть указан");
 
-        if (!films.containsKey(film.getId()))
-            throw new NotFoundException("Фильм с id = " + film.getId() + " не найден");
+        if (!users.containsKey(user.getId()))
+            throw new NotFoundException("Пользователь с id = " + user.getId() + " не найден");
 
         try {
-            film.validate();
+            user.validate();
         } catch (ValidationException e) {
             log.warn(e.getMessage());
             throw e;
         }
 
-        films.put(film.getId(), film);
-        log.info("Film id:{} was updated: {}", film.getId(), film);
-        return film;
+        users.put(user.getId(), user);
+        log.info("User id:{} was updated: {}", user.getId(), user);
+        return user;
     }
 
-
     private long getNextId() {
-        long currentMaxId = films.keySet()
+        long currentMaxId = users.keySet()
                 .stream()
                 .mapToLong(id -> id)
                 .max()
