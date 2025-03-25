@@ -4,17 +4,20 @@ import lombok.Data;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 
 import java.time.Duration;
-import java.time.Instant;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 
 @Data
 public class Film {
     public static final int MAX_DESCRIPTION_SIZE = 200;
+    private static final LocalDate FIRST_FILM_RELEASE_DATE
+            = LocalDate.of(1895, 12, 28);
 
     Long id;
     String name;
     String description;
-    Instant releaseDate;
+    LocalDate releaseDate;
     Duration duration;
 
     public void validate() throws ValidationException {
@@ -36,9 +39,9 @@ public class Film {
         if (releaseDate == null)
             throw new ValidationException("Дата релиза не задана");
 
-        Instant instant = Instant.parse("1895-12-28T00:00:00.00Z");
-        if (releaseDate.isBefore(instant))
-            throw new ValidationException("Дата релиза не может быть ранее " + instant);
+        if (releaseDate.isBefore(FIRST_FILM_RELEASE_DATE))
+            throw new ValidationException("Дата релиза не может быть ранее "
+                    + FIRST_FILM_RELEASE_DATE.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
     }
 
     private void validateName() {

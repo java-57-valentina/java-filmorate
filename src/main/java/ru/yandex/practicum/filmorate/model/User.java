@@ -3,7 +3,7 @@ package ru.yandex.practicum.filmorate.model;
 import lombok.Data;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 
-import java.time.Instant;
+import java.time.LocalDate;
 
 @Data
 public class User {
@@ -11,7 +11,7 @@ public class User {
     String email;
     String login;
     String name;
-    Instant birthday;
+    LocalDate birthday;
 
     public void validate() throws ValidationException {
         validateLogin();
@@ -22,8 +22,7 @@ public class User {
     private void validateBirthday() {
         if (birthday == null)
             throw new ValidationException("Дата рождения не задан");
-        Instant now = Instant.now();
-        if (birthday.isAfter(now))
+        if (birthday.isAfter(LocalDate.now()))
             throw new ValidationException("Дата рождения не может быть в будущем");
     }
 
