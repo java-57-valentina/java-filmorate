@@ -1,51 +1,42 @@
 package ru.yandex.practicum.filmorate.model;
 
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 
 import java.time.LocalDate;
 
 @Data
+@AllArgsConstructor
 public class User {
     Long id;
+
+    @NotNull
+    @NotBlank
+    @Email
     String email;
+
+    @NotNull
+    @NotBlank
+    @Pattern(regexp = "[^ ]*")
     String login;
+
     String name;
+
+    @NotNull
     LocalDate birthday;
 
     public void validate() throws ValidationException {
-        validateLogin();
-        validateEmail();
         validateBirthday();
     }
 
     private void validateBirthday() {
-        if (birthday == null)
-            throw new ValidationException("Дата рождения не задан");
         if (birthday.isAfter(LocalDate.now()))
             throw new ValidationException("Дата рождения не может быть в будущем");
     }
-
-    private void validateLogin() {
-        if (login == null)
-            throw new ValidationException("Логин не может быть пустым");
-
-        if (login.isBlank())
-            throw new ValidationException("Логин не может быть пустым");
-
-        if (login.contains(" "))
-            throw new ValidationException("Логин не может содержать пробелы");
-    }
-
-    private void validateEmail() {
-        if (email == null)
-            throw new ValidationException("E-mail не может быть пустым");
-
-        if (email.isBlank())
-            throw new ValidationException("E-mail не может быть пустым");
-
-        int index = email.indexOf("@");
-        if (index <= 0 || index == email.length() - 1)
-            throw new ValidationException("E-mail должен содержать символ '@'");
-    }
 }
+

@@ -1,10 +1,10 @@
 package ru.yandex.practicum.filmorate.controller;
 
+import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.exception.ConditionsNotMetException;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
-import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.util.Collection;
@@ -24,15 +24,8 @@ public class UserController {
     }
 
     @PostMapping
-    public  User create(@RequestBody User user) {
-
-        try {
-            user.validate();
-        } catch (ValidationException e) {
-            log.warn(e.getMessage());
-            throw e;
-        }
-
+    public  User create(@Valid @RequestBody User user) {
+        user.validate();
         user.setId(getNextId());
         if (user.getName() == null || user.getName().isBlank())
             user.setName(user.getLogin());
@@ -43,7 +36,7 @@ public class UserController {
     }
 
     @PutMapping
-    public User update(@RequestBody User user) {
+    public User update(@Valid @RequestBody User user) {
 
         if (user.getId() == null)
             throw new ConditionsNotMetException("Id должен быть указан");
@@ -51,12 +44,7 @@ public class UserController {
         if (!users.containsKey(user.getId()))
             throw new NotFoundException("Пользователь с id = " + user.getId() + " не найден");
 
-        try {
-            user.validate();
-        } catch (ValidationException e) {
-            log.warn(e.getMessage());
-            throw e;
-        }
+        user.validate();
 
         users.put(user.getId(), user);
         log.info("User id:{} was updated: {}", user.getId(), user);
