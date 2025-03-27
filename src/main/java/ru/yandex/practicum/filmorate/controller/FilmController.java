@@ -1,12 +1,17 @@
 package ru.yandex.practicum.filmorate.controller;
 
-import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.exception.ConditionsNotMetException;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
+import ru.yandex.practicum.filmorate.exception.ValidationException;
+import ru.yandex.practicum.filmorate.model.AdvanceInfo;
+import ru.yandex.practicum.filmorate.model.BasicInfo;
 import ru.yandex.practicum.filmorate.model.Film;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -24,8 +29,8 @@ public class FilmController {
     }
 
     @PostMapping
-    public Film create(@Valid @RequestBody Film film) {
-        film.validate();
+    public Film create(@Validated (BasicInfo.class) @RequestBody Film film) {
+        validate(film);
 
         final long id = getNextId();
         film.setId(id);
@@ -35,20 +40,40 @@ public class FilmController {
     }
 
     @PutMapping
-    public Film update(@Valid @RequestBody Film film) {
-        if (film.getId() == null)
-            throw new ConditionsNotMetException("Id должен быть указан");
+    public Film update(@Validated (AdvanceInfo.class) @RequestBody Film film) {
 
         if (!films.containsKey(film.getId()))
             throw new NotFoundException("Фильм с id = " + film.getId() + " не найден");
 
-        film.validate();
+        Film origin = films.get(film.getId());
+        if (film.getName() != null)
+            origin.setName(film.getName());
 
-        films.put(film.getId(), film);
-        log.info("Film id:{} was updated: {}", film.getId(), film);
-        return film;
+        if (film.getDuration() != null)
+            origin.setDuration(film.getDuration());
+
+        if (film.getDescription() != null)
+            origin.setDescription(film.getDescription());
+
+        if (film.getReleaseDate() != null)
+            origin.setReleaseDate(film.getReleaseDate());
+
+        log.info("Film id:{} was updated: {}", origin.getId(), origin);
+        return origin;
     }
 
+    private static final LocalDate FIRST_FILM_RELEASE_DATE
+            = LocalDate.of(1895, 12, 28);
+
+    private void validate(Film film) throws ValidationException {
+        validateReleaseDate(film.getReleaseDate());
+    }
+
+    private void validateReleaseDate(@NotNull LocalDate date) {
+        if (date.isBefore(FIRST_FILM_RELEASE_DATE))
+            throw new ValidationException("Дата релиза не может быть ранее "
+                    + FIRST_FILM_RELEASE_DATE.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+    }
 
     private long getNextId() {
         long currentMaxId = films.keySet()

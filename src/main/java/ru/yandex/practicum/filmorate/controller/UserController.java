@@ -1,15 +1,14 @@
 package ru.yandex.practicum.filmorate.controller;
 
-import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.exception.ConditionsNotMetException;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
+import ru.yandex.practicum.filmorate.model.AdvanceInfo;
+import ru.yandex.practicum.filmorate.model.BasicInfo;
 import ru.yandex.practicum.filmorate.model.User;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 @Slf4j
 @RestController
@@ -24,8 +23,7 @@ public class UserController {
     }
 
     @PostMapping
-    public  User create(@Valid @RequestBody User user) {
-        user.validate();
+    public  User create(@Validated(BasicInfo.class) @RequestBody User user) {
         user.setId(getNextId());
         if (user.getName() == null || user.getName().isBlank())
             user.setName(user.getLogin());
@@ -36,19 +34,27 @@ public class UserController {
     }
 
     @PutMapping
-    public User update(@Valid @RequestBody User user) {
-
-        if (user.getId() == null)
-            throw new ConditionsNotMetException("Id должен быть указан");
+    public User update(@Validated(AdvanceInfo.class) @RequestBody User user) {
 
         if (!users.containsKey(user.getId()))
             throw new NotFoundException("Пользователь с id = " + user.getId() + " не найден");
 
-        user.validate();
+        User origin = users.get(user.getId());
 
-        users.put(user.getId(), user);
-        log.info("User id:{} was updated: {}", user.getId(), user);
-        return user;
+        if (user.getEmail() != null)
+            origin.setEmail(user.getEmail());
+
+        if (user.getBirthday() != null)
+            origin.setBirthday(user.getBirthday());
+
+        if (user.getName() != null)
+            origin.setName(user.getName());
+
+        if (user.getLogin() != null)
+            origin.setLogin(user.getLogin());
+
+        log.info("User id:{} was updated: {}", origin.getId(), origin);
+        return origin;
     }
 
     private long getNextId() {

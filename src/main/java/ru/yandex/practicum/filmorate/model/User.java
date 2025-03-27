@@ -1,42 +1,31 @@
 package ru.yandex.practicum.filmorate.model;
 
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import ru.yandex.practicum.filmorate.exception.ValidationException;
 
 import java.time.LocalDate;
 
 @Data
 @AllArgsConstructor
 public class User {
-    Long id;
 
-    @NotNull
-    @NotBlank
-    @Email
-    String email;
+    @NotNull (groups = AdvanceInfo.class)
+    private Long id;
 
-    @NotNull
-    @NotBlank
+    @NotNull (groups = BasicInfo.class)
+    @Email (groups = BasicInfo.class)
+    private String email;
+
+    @NotNull (groups = BasicInfo.class)
+    @NotBlank (groups = BasicInfo.class)
     @Pattern(regexp = "[^ ]*")
-    String login;
+    private String login;
 
-    String name;
+    private String name;
 
-    @NotNull
-    LocalDate birthday;
-
-    public void validate() throws ValidationException {
-        validateBirthday();
-    }
-
-    private void validateBirthday() {
-        if (birthday.isAfter(LocalDate.now()))
-            throw new ValidationException("Дата рождения не может быть в будущем");
-    }
+    @NotNull (groups = BasicInfo.class)
+    @Past (groups = BasicInfo.class)
+    private LocalDate birthday;
 }
 
