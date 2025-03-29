@@ -14,7 +14,7 @@ public class User {
     private Long id;
 
     @NotBlank (groups = BasicInfo.class)
-    @Email (groups = BasicInfo.class)
+    @Email (groups = {BasicInfo.class, AdvanceInfo.class})
     private String email;
 
     @NotBlank (groups = BasicInfo.class)
@@ -24,7 +24,7 @@ public class User {
     private String name;
 
     @NotNull (groups = BasicInfo.class)
-    @Past (groups = BasicInfo.class)
+    @Past (groups = {BasicInfo.class, AdvanceInfo.class})
     private LocalDate birthday;
 }
 

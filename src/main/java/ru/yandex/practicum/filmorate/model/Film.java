@@ -21,13 +21,15 @@ public class Film {
     @NotBlank (groups = BasicInfo.class)
     private String name;
 
-    @Size(max = MAX_DESCRIPTION_SIZE, message = "Максимальная длина описания - 200 символов", groups = BasicInfo.class)
+    @Size(max = MAX_DESCRIPTION_SIZE, message = "Максимальная длина описания - 200 символов",
+            groups = {BasicInfo.class, AdvanceInfo.class})
     private String description;
 
     @NotNull (groups = BasicInfo.class)
     private LocalDate releaseDate;
 
     @NotNull (groups = BasicInfo.class)
-    @Min(value = 1, message = "Продолжительность должна быть положительным числом", groups = BasicInfo.class)
+    @Min(value = 1, message = "Продолжительность должна быть положительным числом",
+            groups = {BasicInfo.class, AdvanceInfo.class})
     private Integer duration;
 }
