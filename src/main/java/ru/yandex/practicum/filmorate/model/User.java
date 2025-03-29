@@ -13,11 +13,10 @@ public class User {
     @NotNull (groups = AdvanceInfo.class)
     private Long id;
 
-    @NotNull (groups = BasicInfo.class)
+    @NotBlank (groups = BasicInfo.class)
     @Email (groups = BasicInfo.class)
     private String email;
 
-    @NotNull (groups = BasicInfo.class)
     @NotBlank (groups = BasicInfo.class)
     @Pattern(regexp = "[^ ]*")
     private String login;

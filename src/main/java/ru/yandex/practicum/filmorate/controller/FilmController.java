@@ -21,6 +21,9 @@ import java.util.Map;
 @RequestMapping("/films")
 public class FilmController {
 
+    private static final LocalDate FIRST_FILM_RELEASE_DATE
+            = LocalDate.of(1895, 12, 28);
+
     private final Map<Long, Film> films = new HashMap<>();
 
     @GetMapping
@@ -61,9 +64,6 @@ public class FilmController {
         log.info("Film id:{} was updated: {}", origin.getId(), origin);
         return origin;
     }
-
-    private static final LocalDate FIRST_FILM_RELEASE_DATE
-            = LocalDate.of(1895, 12, 28);
 
     private void validate(Film film) throws ValidationException {
         validateReleaseDate(film.getReleaseDate());
