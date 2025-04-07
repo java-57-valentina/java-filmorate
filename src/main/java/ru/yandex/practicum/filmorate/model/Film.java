@@ -7,6 +7,8 @@ import jakarta.validation.constraints.Size;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
+import ru.yandex.practicum.filmorate.exception.AlreadyLikedException;
+import ru.yandex.practicum.filmorate.exception.LikeNotFoundException;
 
 import java.time.LocalDate;
 import java.util.LinkedHashSet;
@@ -39,11 +41,13 @@ public class Film {
 
     private Set<Long> likes = new LinkedHashSet<>();
 
-    public boolean addLike(Long userId) {
-        return likes.add(userId);
+    public void addLike(Long userId) {
+        if (!likes.add(userId))
+            throw new AlreadyLikedException(id, userId);
     }
 
-    public boolean removeLike(Long userId) {
-        return likes.remove(userId);
+    public void removeLike(Long userId) {
+        if (!likes.remove(userId))
+            throw new LikeNotFoundException(id, userId);
     }
 }
