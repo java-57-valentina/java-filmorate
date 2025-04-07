@@ -3,7 +3,7 @@ package ru.yandex.practicum.filmorate.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.exception.ConditionsNotMetException;
+import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
@@ -19,7 +19,7 @@ public class UserService {
 
     public void addFriend(Long id, Long friendId) {
         if (id.equals(friendId))
-            throw new ConditionsNotMetException(id + " = " + friendId);
+            throw new ValidationException(id + " = " + friendId);
         User user1 = userStorage.getUser(id);
         User user2 = userStorage.getUser(friendId);
 
@@ -30,8 +30,6 @@ public class UserService {
     }
 
     public void removeFriend(Long id, Long friendId) {
-        if (id.equals(friendId))
-            throw new ConditionsNotMetException(id + " = " + friendId);
 
         User user1 = userStorage.getUser(id);
         User user2 = userStorage.getUser(friendId);

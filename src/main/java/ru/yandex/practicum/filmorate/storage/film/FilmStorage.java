@@ -19,12 +19,9 @@ public interface FilmStorage {
 
     Film update(Film film);
 
-    default void validate(Film film) throws ValidationException {
-        validateReleaseDate(film.getReleaseDate());
-    }
 
-    default void validateReleaseDate(LocalDate date) {
-        if (date.isBefore(FIRST_FILM_RELEASE_DATE))
+    default void validate(Film film) throws ValidationException {
+        if (film.getReleaseDate().isBefore(FIRST_FILM_RELEASE_DATE))
             throw new ValidationException("Дата релиза не может быть ранее "
                     + FIRST_FILM_RELEASE_DATE.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
     }

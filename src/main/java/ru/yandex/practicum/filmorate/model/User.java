@@ -4,11 +4,15 @@ import jakarta.validation.constraints.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
+import lombok.extern.slf4j.Slf4j;
+import ru.yandex.practicum.filmorate.exception.AlreadyFriendException;
+import ru.yandex.practicum.filmorate.exception.FriendNotFoundException;
 
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
 
+@Slf4j
 @Data
 @ToString
 @EqualsAndHashCode
@@ -33,12 +37,14 @@ public class User {
 
     private Set<Long> friends = new HashSet<>();
 
-    public boolean addFriend(Long id) {
-        return friends.add(id);
+    public void addFriend(Long id) {
+        if (!friends.add(id))
+            throw new AlreadyFriendException(this.id, id);
     }
 
-    public boolean removeFriend(Long id) {
-        return friends.remove(id);
+    public void removeFriend(Long id) {
+        if (!friends.remove(id))
+            throw new FriendNotFoundException(this.id, id);
     }
 }
 
