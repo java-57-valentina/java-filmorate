@@ -1,68 +1,67 @@
 package ru.yandex.practicum.filmorate.controller;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.AdvanceInfo;
 import ru.yandex.practicum.filmorate.model.BasicInfo;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.service.UserService;
+import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
-import java.util.*;
+import java.util.Collection;
 
 @Slf4j
 @RestController
-@RequestMapping("/users")
+@RequiredArgsConstructor
 public class UserController {
 
-    private final Map<Long, User> users = new HashMap<>();
+    private final UserStorage userStorage;
+    private final UserService userService;
 
-    @GetMapping
+    @GetMapping("/users")
     Collection<User> getAll() {
-        return users.values();
+        return userStorage.getAll();
     }
 
-    @PostMapping
+    @GetMapping("/users/{id}")
+    public User getUser(@PathVariable Long id) {
+        return userStorage.getUser(id);
+    }
+
+    @PostMapping("/users")
     public  User create(@Validated(BasicInfo.class) @RequestBody User user) {
-        user.setId(getNextId());
-        if (user.getName() == null || user.getName().isBlank())
-            user.setName(user.getLogin());
-
-        users.put(user.getId(), user);
-        log.info("User id:{} was added: {}", user.getId(), user);
-        return user;
+        return userStorage.create(user);
     }
 
-    @PutMapping
+    @PutMapping("/users")
     public User update(@Validated(AdvanceInfo.class) @RequestBody User user) {
-
-        if (!users.containsKey(user.getId()))
-            throw new NotFoundException("Пользователь с id = " + user.getId() + " не найден");
-
-        User origin = users.get(user.getId());
-
-        if (user.getEmail() != null)
-            origin.setEmail(user.getEmail());
-
-        if (user.getBirthday() != null)
-            origin.setBirthday(user.getBirthday());
-
-        if (user.getName() != null)
-            origin.setName(user.getName());
-
-        if (user.getLogin() != null)
-            origin.setLogin(user.getLogin());
-
-        log.info("User id:{} was updated: {}", origin.getId(), origin);
-        return origin;
+        return userStorage.update(user);
     }
 
-    private long getNextId() {
-        long currentMaxId = users.keySet()
-                .stream()
-                .mapToLong(id -> id)
-                .max()
-                .orElse(0);
-        return ++currentMaxId;
+    @PutMapping("/users/{id}/friends/{friendId}")
+    @ResponseStatus(HttpStatus.OK)
+    public void addFriend(@PathVariable Long id, @PathVariable Long friendId) {
+        userService.addFriend(id, friendId);
+    }
+
+    @DeleteMapping("/users/{id}/friends/{friendId}")
+    @ResponseStatus(HttpStatus.OK)
+    public void removeFriend(@PathVariable Long id, @PathVariable Long friendId) {
+        userService.removeFriend(id, friendId);
+    }
+
+    @GetMapping("/users/{id}/friends")
+    @ResponseStatus(HttpStatus.OK)
+    public Collection<User> getFriends(@PathVariable Long id) {
+        return userService.getFriends(id);
+    }
+
+    @GetMapping("/users/{id}/friends/common/{otherId}")
+    @ResponseStatus(HttpStatus.OK)
+    public Collection<User> getCommonFriends(@PathVariable Long id, @PathVariable Long otherId) {
+        return userService.getCommonFriends(id, otherId);
     }
 }

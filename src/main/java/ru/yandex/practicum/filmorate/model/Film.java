@@ -4,14 +4,18 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 import java.time.LocalDate;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 
 @Data
-@AllArgsConstructor
+@ToString
+@EqualsAndHashCode
 public class Film {
     public static final int MAX_DESCRIPTION_SIZE = 200;
 
@@ -32,4 +36,14 @@ public class Film {
     @Min(value = 1, message = "Продолжительность должна быть положительным числом",
             groups = {BasicInfo.class, AdvanceInfo.class})
     private Integer duration;
+
+    private Set<Long> likes = new LinkedHashSet<>();
+
+    public boolean addLike(Long userId) {
+        return likes.add(userId);
+    }
+
+    public boolean removeLike(Long userId) {
+        return likes.remove(userId);
+    }
 }
