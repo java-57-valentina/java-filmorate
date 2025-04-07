@@ -22,10 +22,10 @@ public class InMemoryUserStorage implements UserStorage {
 
     @Override
     public  User create(User user) {
-        user.setId(getNextId());
         if (user.getName() == null || user.getName().isBlank())
             user.setName(user.getLogin());
 
+        user.setId(getNextId());
         users.put(user.getId(), user);
         log.info("User id:{} was added: {}", user.getId(), user);
         return user;
@@ -33,7 +33,6 @@ public class InMemoryUserStorage implements UserStorage {
 
     @Override
     public User update(User user) {
-
         User origin = users.get(user.getId());
         if (origin == null)
             throw new NotFoundException("User id = " + user.getId() + " not found");
