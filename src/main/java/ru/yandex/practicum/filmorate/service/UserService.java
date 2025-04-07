@@ -1,6 +1,7 @@
 package ru.yandex.practicum.filmorate.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.ConditionsNotMetException;
 import ru.yandex.practicum.filmorate.model.User;
@@ -10,30 +11,35 @@ import java.util.Collection;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class UserService {
     private final UserStorage userStorage;
 
-    public void addFriend(Long id1, Long id2) {
-        if (id1.equals(id2))
-            throw new ConditionsNotMetException(id1 + " = " + id2);
-        User user1 = userStorage.getUser(id1);
-        User user2 = userStorage.getUser(id2);
+    public void addFriend(Long id, Long friendId) {
+        if (id.equals(friendId))
+            throw new ConditionsNotMetException(id + " = " + friendId);
+        User user1 = userStorage.getUser(id);
+        User user2 = userStorage.getUser(friendId);
 
-        user1.addFriend(id2);
-        user2.addFriend(id1);
+        user1.addFriend(friendId);
+        user2.addFriend(id);
+
+        log.info("User id:{} has added friend id:{}", id, friendId);
     }
 
-    public void removeFriend(Long id1, Long id2) {
-        if (id1.equals(id2))
-            throw new ConditionsNotMetException(id1 + " = " + id2);
+    public void removeFriend(Long id, Long friendId) {
+        if (id.equals(friendId))
+            throw new ConditionsNotMetException(id + " = " + friendId);
 
-        User user1 = userStorage.getUser(id1);
-        User user2 = userStorage.getUser(id2);
+        User user1 = userStorage.getUser(id);
+        User user2 = userStorage.getUser(friendId);
 
-        user1.removeFriend(id2);
-        user2.removeFriend(id1);
+        user1.removeFriend(friendId);
+        user2.removeFriend(id);
+
+        log.info("User id:{} has removed friend id:{}", id, friendId);
     }
 
     public Set<User> getCommonFriends(Long id, Long otherId) {
