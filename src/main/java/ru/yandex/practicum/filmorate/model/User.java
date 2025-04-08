@@ -40,5 +40,9 @@ public class User {
     public void removeFriend(Long id) {
         friends.remove(id);
     }
+
+    public void clearFriends() {
+        friends.clear();
+    }
 }
 

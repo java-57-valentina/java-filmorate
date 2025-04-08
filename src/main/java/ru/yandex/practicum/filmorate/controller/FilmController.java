@@ -9,7 +9,6 @@ import ru.yandex.practicum.filmorate.model.AdvanceInfo;
 import ru.yandex.practicum.filmorate.model.BasicInfo;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.service.FilmService;
-import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 
 import java.util.Collection;
 
@@ -18,27 +17,26 @@ import java.util.Collection;
 @RequiredArgsConstructor
 public class FilmController {
 
-    private final FilmStorage filmStorage;
     private final FilmService filmService;
 
     @GetMapping("/films")
     public Collection<Film> getAll() {
-        return filmStorage.getAll();
+        return filmService.getAll();
     }
 
     @GetMapping("/films/{id}")
     public Film getFilm(@PathVariable Long id) {
-        return filmStorage.getFilm(id);
+        return filmService.getFilm(id);
     }
 
     @PostMapping("/films")
     public Film create(@Validated (BasicInfo.class) @RequestBody Film film) {
-        return filmStorage.create(film);
+        return filmService.create(film);
     }
 
     @PutMapping("/films")
     public Film update(@Validated (AdvanceInfo.class) @RequestBody Film film) {
-        return filmStorage.update(film);
+        return filmService.update(film);
     }
 
     @PutMapping("/films/{id}/like/{userId}")

@@ -9,7 +9,6 @@ import ru.yandex.practicum.filmorate.model.AdvanceInfo;
 import ru.yandex.practicum.filmorate.model.BasicInfo;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.UserService;
-import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.util.Collection;
 
@@ -18,27 +17,26 @@ import java.util.Collection;
 @RequiredArgsConstructor
 public class UserController {
 
-    private final UserStorage userStorage;
     private final UserService userService;
 
     @GetMapping("/users")
     Collection<User> getAll() {
-        return userStorage.getAll();
+        return userService.getAll();
     }
 
     @GetMapping("/users/{id}")
     public User getUser(@PathVariable Long id) {
-        return userStorage.getUser(id);
+        return userService.getUser(id);
     }
 
     @PostMapping("/users")
     public  User create(@Validated(BasicInfo.class) @RequestBody User user) {
-        return userStorage.create(user);
+        return userService.create(user);
     }
 
     @PutMapping("/users")
     public User update(@Validated(AdvanceInfo.class) @RequestBody User user) {
-        return userStorage.update(user);
+        return userService.update(user);
     }
 
     @PutMapping("/users/{id}/friends/{friendId}")

@@ -42,4 +42,21 @@ public class FilmService {
                 .limit(count)
                 .collect(Collectors.toList());
     }
+
+    public Collection<Film> getAll() {
+        return filmStorage.getAll();
+    }
+
+    public Film getFilm(Long id) {
+        return filmStorage.getFilm(id);
+    }
+
+    public Film create(Film film) {
+        film.clearLikes();
+        return filmStorage.create(film);
+    }
+
+    public Film update(Film film) {
+        return filmStorage.update(film);
+    }
 }

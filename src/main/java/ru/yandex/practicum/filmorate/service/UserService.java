@@ -17,6 +17,23 @@ import java.util.stream.Collectors;
 public class UserService {
     private final UserStorage userStorage;
 
+    public Collection<User> getAll() {
+        return userStorage.getAll();
+    }
+
+    public User getUser(Long id) {
+        return userStorage.getUser(id);
+    }
+
+    public User create(User user) {
+        user.clearFriends();
+        return userStorage.create(user);
+    }
+
+    public User update(User user) {
+        return userStorage.update(user);
+    }
+
     public void addFriend(Long id, Long friendId) {
         if (id.equals(friendId))
             throw new ValidationException(id + " = " + friendId);
@@ -52,7 +69,6 @@ public class UserService {
                 .map(userStorage::getUser)
                 .collect(Collectors.toSet());
     }
-
 
     public Collection<User> getFriends(Long id) {
         User user = userStorage.getUser(id);

@@ -46,4 +46,8 @@ public class Film {
         if (!likes.remove(userId))
             throw new LikeNotFoundException(id, userId);
     }
+
+    public void clearLikes() {
+        likes.clear();
+    }
 }
