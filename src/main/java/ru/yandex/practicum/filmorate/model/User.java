@@ -2,11 +2,8 @@ package ru.yandex.practicum.filmorate.model;
 
 import jakarta.validation.constraints.*;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import ru.yandex.practicum.filmorate.exception.AlreadyFriendException;
-import ru.yandex.practicum.filmorate.exception.FriendNotFoundException;
 
 import java.time.LocalDate;
 import java.util.HashSet;
@@ -14,8 +11,6 @@ import java.util.Set;
 
 @Slf4j
 @Data
-@ToString
-@EqualsAndHashCode
 public class User {
 
     @NotNull (groups = AdvanceInfo.class)
@@ -43,8 +38,7 @@ public class User {
     }
 
     public void removeFriend(Long id) {
-        if (!friends.remove(id))
-            throw new FriendNotFoundException(this.id, id);
+        friends.remove(id);
     }
 }
 

@@ -5,8 +5,6 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
 import ru.yandex.practicum.filmorate.exception.AlreadyLikedException;
 import ru.yandex.practicum.filmorate.exception.LikeNotFoundException;
 
@@ -16,8 +14,6 @@ import java.util.Set;
 
 
 @Data
-@ToString
-@EqualsAndHashCode
 public class Film {
     public static final int MAX_DESCRIPTION_SIZE = 200;
 
