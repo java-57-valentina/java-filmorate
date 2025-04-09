@@ -31,7 +31,9 @@ public class UserController {
 
     @PostMapping("/users")
     public  User create(@Validated(BasicInfo.class) @RequestBody User user) {
-        return userService.create(user);
+        User created = userService.create(user);
+        log.info("User id:{} was added: {}", created.getId(), created);
+        return created;
     }
 
     @PutMapping("/users")

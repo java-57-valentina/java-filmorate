@@ -31,7 +31,21 @@ public class UserService {
     }
 
     public User update(User user) {
-        return userStorage.update(user);
+        User origin = userStorage.getUser(user.getId());
+
+        if (user.getEmail() != null)
+            origin.setEmail(user.getEmail());
+
+        if (user.getBirthday() != null)
+            origin.setBirthday(user.getBirthday());
+
+        if (user.getName() != null)
+            origin.setName(user.getName());
+
+        if (user.getLogin() != null)
+            origin.setLogin(user.getLogin());
+
+        return userStorage.update(origin);
     }
 
     public void addFriend(Long id, Long friendId) {
