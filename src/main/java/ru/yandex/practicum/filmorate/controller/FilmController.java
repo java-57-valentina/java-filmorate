@@ -10,6 +10,8 @@ import ru.yandex.practicum.filmorate.model.BasicInfo;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.service.FilmService;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Collection;
 
 @Slf4j
@@ -18,6 +20,8 @@ import java.util.Collection;
 public class FilmController {
 
     private final FilmService filmService;
+    private static final LocalDate FIRST_FILM_RELEASE_DATE
+            = LocalDate.of(1895, 12, 28);
 
     @GetMapping("/films")
     public Collection<Film> getAll() {
@@ -31,11 +35,13 @@ public class FilmController {
 
     @PostMapping("/films")
     public Film create(@Validated (BasicInfo.class) @RequestBody Film film) {
+        validate(film);
         return filmService.create(film);
     }
 
     @PutMapping("/films")
     public Film update(@Validated (AdvanceInfo.class) @RequestBody Film film) {
+        validate(film);
         return filmService.update(film);
     }
 
@@ -51,10 +57,15 @@ public class FilmController {
 
     @GetMapping("/films/popular")
     public Collection<Film> getTopFilms(
-            @RequestParam(defaultValue = "10",  required = false) int count) {
+            @RequestParam(defaultValue = "10") int count) {
         if (count <= 0)
             throw new ValidationException("count > 0");
         return filmService.getTop(count);
     }
 
+    private void validate(Film film) throws ValidationException {
+        if (film.getReleaseDate().isBefore(FIRST_FILM_RELEASE_DATE))
+            throw new ValidationException("The release date cannot be earlier "
+                    + FIRST_FILM_RELEASE_DATE.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+    }
 }

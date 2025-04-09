@@ -8,8 +8,6 @@ import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.util.Collection;
-import java.util.Comparator;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -35,12 +33,7 @@ public class FilmService {
     }
 
     public Collection<Film> getTop(int count) {
-        Comparator<? super Film> comparator = Comparator.comparingInt(f -> f.getLikes().size());
-
-        return filmStorage.getAll().stream()
-                .sorted(comparator.reversed())
-                .limit(count)
-                .collect(Collectors.toList());
+        return filmStorage.getTop(count);
     }
 
     public Collection<Film> getAll() {
@@ -57,6 +50,20 @@ public class FilmService {
     }
 
     public Film update(Film film) {
+
+        Film origin = filmStorage.getFilm(film.getId());
+        if (film.getName() != null)
+            origin.setName(film.getName());
+
+        if (film.getDuration() != null)
+            origin.setDuration(film.getDuration());
+
+        if (film.getDescription() != null)
+            origin.setDescription(film.getDescription());
+
+        if (film.getReleaseDate() != null)
+            origin.setReleaseDate(film.getReleaseDate());
+
         return filmStorage.update(film);
     }
 }

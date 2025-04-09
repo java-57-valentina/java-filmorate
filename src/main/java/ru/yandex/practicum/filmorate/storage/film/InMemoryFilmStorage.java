@@ -6,8 +6,10 @@ import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
 
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Component
@@ -24,14 +26,12 @@ public class InMemoryFilmStorage implements FilmStorage {
     public Film getFilm(Long id) {
         Film film = films.get(id);
         if (film == null)
-            throw new NotFoundException("Film " + id + " not found");
+            throw new NotFoundException("Film id:" + id + " not found");
         return film;
     }
 
     @Override
     public Film create(Film film) {
-        validate(film);
-
         final long id = getNextId();
         film.setId(id);
         films.put(id, film);
@@ -41,25 +41,19 @@ public class InMemoryFilmStorage implements FilmStorage {
 
     @Override
     public Film update(Film film) {
+        films.put(film.getId(), film);
+        log.info("Film id:{} was updated: {}", film.getId(), film);
+        return film;
+    }
 
-        if (!films.containsKey(film.getId()))
-            throw new NotFoundException("Film " + film.getId() + " not found");
+    @Override
+    public Collection<Film> getTop(int count) {
+        Comparator<? super Film> comparator = Comparator.comparingInt(f -> f.getLikes().size());
 
-        Film origin = films.get(film.getId());
-        if (film.getName() != null)
-            origin.setName(film.getName());
-
-        if (film.getDuration() != null)
-            origin.setDuration(film.getDuration());
-
-        if (film.getDescription() != null)
-            origin.setDescription(film.getDescription());
-
-        if (film.getReleaseDate() != null)
-            origin.setReleaseDate(film.getReleaseDate());
-
-        log.info("Film id:{} was updated: {}", origin.getId(), origin);
-        return origin;
+        return films.values().stream()
+                .sorted(comparator.reversed())
+                .limit(count)
+                .collect(Collectors.toList());
     }
 
     private long getNextId() {

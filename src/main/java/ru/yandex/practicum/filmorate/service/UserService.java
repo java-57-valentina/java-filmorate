@@ -37,11 +37,12 @@ public class UserService {
     public void addFriend(Long id, Long friendId) {
         if (id.equals(friendId))
             throw new ValidationException(id + " = " + friendId);
-        User user1 = userStorage.getUser(id);
-        User user2 = userStorage.getUser(friendId);
 
-        user1.addFriend(friendId);
-        user2.addFriend(id);
+        User user = userStorage.getUser(id);
+        User friend = userStorage.getUser(friendId);
+
+        user.addFriend(friendId);
+        friend.addFriend(id);
 
         log.info("User id:{} has added friend id:{}", id, friendId);
     }
