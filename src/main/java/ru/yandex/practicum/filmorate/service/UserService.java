@@ -1,7 +1,6 @@
 package ru.yandex.practicum.filmorate.service;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
@@ -11,7 +10,6 @@ import java.util.Collection;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-@Slf4j
 @Service
 @RequiredArgsConstructor
 public class UserService {
@@ -57,19 +55,14 @@ public class UserService {
 
         user.addFriend(friendId);
         friend.addFriend(id);
-
-        log.info("User id:{} has added friend id:{}", id, friendId);
     }
 
     public void removeFriend(Long id, Long friendId) {
-
         User user1 = userStorage.getUser(id);
         User user2 = userStorage.getUser(friendId);
 
         user1.removeFriend(friendId);
         user2.removeFriend(id);
-
-        log.info("User id:{} has removed friend id:{}", id, friendId);
     }
 
     public Set<User> getCommonFriends(Long id, Long otherId) {

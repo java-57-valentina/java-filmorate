@@ -36,23 +36,31 @@ public class FilmController {
     @PostMapping("/films")
     public Film create(@Validated (BasicInfo.class) @RequestBody Film film) {
         validate(film);
-        return filmService.create(film);
+        Film created = filmService.create(film);
+        log.info("Film id:{} was added: {}", created.getId(), created);
+        return created;
     }
 
     @PutMapping("/films")
     public Film update(@Validated (AdvanceInfo.class) @RequestBody Film film) {
         validate(film);
-        return filmService.update(film);
+        Film updated = filmService.update(film);
+        log.info("Film id:{} was updated: {}", updated.getId(), updated);
+        return updated;
     }
 
     @PutMapping("/films/{id}/like/{userId}")
     public Film like(@PathVariable Long id, @PathVariable Long userId) {
-        return filmService.addLike(id, userId);
+        Film film = filmService.addLike(id, userId);
+        log.info("User id:{} has liked film id:{}", userId, id);
+        return film;
     }
 
     @DeleteMapping("/films/{id}/like/{userId}")
     public Film unlike(@PathVariable Long id, @PathVariable Long userId) {
-        return filmService.removeLike(id, userId);
+        Film film = filmService.removeLike(id, userId);
+        log.info("User id:{} has removed like from film id:{}", userId, id);
+        return film;
     }
 
     @GetMapping("/films/popular")

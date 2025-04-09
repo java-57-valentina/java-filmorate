@@ -38,19 +38,23 @@ public class UserController {
 
     @PutMapping("/users")
     public User update(@Validated(AdvanceInfo.class) @RequestBody User user) {
-        return userService.update(user);
+        User updated = userService.update(user);
+        log.info("User id:{} was updated: {}", user.getId(), user);
+        return updated;
     }
 
     @PutMapping("/users/{id}/friends/{friendId}")
     @ResponseStatus(HttpStatus.OK)
     public void addFriend(@PathVariable Long id, @PathVariable Long friendId) {
         userService.addFriend(id, friendId);
+        log.info("User id:{} has added friend id:{}", id, friendId);
     }
 
     @DeleteMapping("/users/{id}/friends/{friendId}")
     @ResponseStatus(HttpStatus.OK)
     public void removeFriend(@PathVariable Long id, @PathVariable Long friendId) {
         userService.removeFriend(id, friendId);
+        log.info("User id:{} has removed friend id:{}", id, friendId);
     }
 
     @GetMapping("/users/{id}/friends")
