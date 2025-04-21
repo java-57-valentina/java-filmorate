@@ -58,7 +58,7 @@ __Поля__: id, id пользователя, id друга \
 ```sql
 SELECT u.* 
 FROM users u
-JOIN friends f ON u.id = f.friend_id
+JOIN friendship f ON u.id = f.friend_id
 WHERE f.user_id = 0;  -- все на кого подписан пользователь 0
 ```
 
@@ -66,14 +66,14 @@ WHERE f.user_id = 0;  -- все на кого подписан пользова�
 ```sql
 SELECT u.* 
 FROM users u
-JOIN friends f ON u.id = f.user_id
+JOIN friendship f ON u.id = f.user_id
 WHERE f.friend_id = 1;
 ```
 
 #### Проверить, является ли пользователь 0 другом относительно пользователя 2:
 ```sql
 SELECT EXISTS (
-    SELECT 1 FROM friends
+    SELECT 1 FROM friendship
     WHERE user_id = 2 AND friend_id = 0
 );
 ```
