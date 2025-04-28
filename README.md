@@ -1,6 +1,6 @@
 # java-filmorate
 
-![Alt text](/documents/ER.png)
+![Alt text](/documents/filmorate.png)
 
  ### Таблица genres
 Хранит названия жанров \
