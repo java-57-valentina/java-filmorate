@@ -9,8 +9,9 @@ import org.springframework.jdbc.support.KeyHolder;
 
 import java.sql.PreparedStatement;
 import java.sql.Statement;
-import java.util.List;
+import java.util.Collection;
 import java.util.Optional;
+
 
 @RequiredArgsConstructor
 public abstract class BaseStorage<T> {
@@ -26,7 +27,7 @@ public abstract class BaseStorage<T> {
         }
     }
 
-    protected List<T> getMany(String sql, Object... args) {
+    protected Collection<T> getMany(String sql, Object... args) {
         return jdbcTemplate.query(sql, rowMapper, args);
     }
 
@@ -38,7 +39,7 @@ public abstract class BaseStorage<T> {
         return jdbcTemplate.update(sql, args);
     }
 
-    protected Long insertAndReturnId(String sql, Object... args) {
+    protected <K> K insertAndReturnId(String sql, Class<K> clazz, Object... args) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
         jdbcTemplate.update(connection -> {
@@ -48,7 +49,6 @@ public abstract class BaseStorage<T> {
             }
             return ps;
         }, keyHolder);
-
-        return keyHolder.getKeyAs(Long.class);
+        return keyHolder.getKeyAs(clazz);
     }
 }

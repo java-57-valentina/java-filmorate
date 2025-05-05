@@ -39,6 +39,7 @@ public class UserDbStorage extends BaseStorage<User> implements UserStorage {
     @Override
     public User create(User user) {
         Long id = insertAndReturnId(SQL_INSERT_USER,
+                Long.class,
                 user.getLogin(),
                 user.getName(),
                 user.getEmail(),
