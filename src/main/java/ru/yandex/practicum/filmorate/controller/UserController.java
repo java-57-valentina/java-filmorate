@@ -1,12 +1,13 @@
 package ru.yandex.practicum.filmorate.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.model.AdvanceInfo;
-import ru.yandex.practicum.filmorate.model.BasicInfo;
+import ru.yandex.practicum.filmorate.dto.UserCreateDto;
+import ru.yandex.practicum.filmorate.dto.UserResponseDto;
+import ru.yandex.practicum.filmorate.dto.UserUpdateDto;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.UserService;
 
@@ -20,25 +21,25 @@ public class UserController {
     private final UserService userService;
 
     @GetMapping("/users")
-    Collection<User> getAll() {
+    Collection<UserResponseDto> getAll() {
         return userService.getAll();
     }
 
     @GetMapping("/users/{id}")
-    public User getUser(@PathVariable Long id) {
+    public UserResponseDto getUser(@PathVariable Long id) {
         return userService.getUser(id);
     }
 
     @PostMapping("/users")
-    public  User create(@Validated(BasicInfo.class) @RequestBody User user) {
-        User created = userService.create(user);
+    public UserResponseDto create(@Valid @RequestBody UserCreateDto user) {
+        UserResponseDto created = userService.create(user);
         log.info("User id:{} was added: {}", created.getId(), created);
         return created;
     }
 
     @PutMapping("/users")
-    public User update(@Validated(AdvanceInfo.class) @RequestBody User user) {
-        User updated = userService.update(user);
+    public UserResponseDto update(@Valid @RequestBody UserUpdateDto user) {
+        UserResponseDto updated = userService.update(user);
         log.info("User id:{} was updated: {}", user.getId(), user);
         return updated;
     }

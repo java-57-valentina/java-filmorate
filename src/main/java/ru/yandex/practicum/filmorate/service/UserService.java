@@ -1,8 +1,13 @@
 package ru.yandex.practicum.filmorate.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.dto.UserCreateDto;
+import ru.yandex.practicum.filmorate.dto.UserResponseDto;
+import ru.yandex.practicum.filmorate.dto.UserUpdateDto;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
+import ru.yandex.practicum.filmorate.mapper.UserMapper;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
@@ -10,25 +15,35 @@ import java.util.Collection;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class UserService {
+
     private final UserStorage userStorage;
+    private final UserMapper userMapper;
 
-    public Collection<User> getAll() {
-        return userStorage.getAll();
+    public Collection<UserResponseDto> getAll() {
+        return userStorage.getAll().stream()
+                .map(userMapper::mapToUserDto)
+                .collect(Collectors.toList());
     }
 
-    public User getUser(Long id) {
-        return userStorage.getUser(id);
+    public UserResponseDto getUser(Long id) {
+        User found = userStorage.getUser(id);
+        return userMapper.mapToUserDto(found);
     }
 
-    public User create(User user) {
-        user.clearFriends();
-        return userStorage.create(user);
+    public UserResponseDto create(UserCreateDto userCreateDto) {
+        User userToCreate = userMapper.mapToUser(userCreateDto);
+        User created = userStorage.create(userToCreate);
+        if (created == null)
+            throw new IllegalStateException("Failed to save data for new user");
+        log.info("User was created: {}", created);
+        return userMapper.mapToUserDto(created);
     }
 
-    public User update(User user) {
+    public UserResponseDto update(UserUpdateDto user) {
         User origin = userStorage.getUser(user.getId());
 
         if (user.getEmail() != null)
@@ -43,7 +58,11 @@ public class UserService {
         if (user.getLogin() != null)
             origin.setLogin(user.getLogin());
 
-        return userStorage.update(origin);
+        User updated = userStorage.update(origin);
+        if (updated == null)
+            throw new IllegalStateException("Не удалось сохранить данные для пользователя");
+
+        return userMapper.mapToUserDto(updated);
     }
 
     public void addFriend(Long id, Long friendId) {
