@@ -1,18 +1,28 @@
 package ru.yandex.practicum.filmorate.service;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.dto.FilmCreateDto;
+import ru.yandex.practicum.filmorate.dto.FilmResponseDto;
+import ru.yandex.practicum.filmorate.mapper.FilmMapper;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.Rating;
+import ru.yandex.practicum.filmorate.storage.rating.RatingStorage;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.util.Collection;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class FilmService {
     private final UserStorage userStorage;
     private final FilmStorage filmStorage;
+    private final RatingStorage ratingStorage;
+
+    private final FilmMapper filmMapper;
 
     public Film addLike(Long id, Long userId) {
         Film film = filmStorage.getFilm(id);
@@ -32,17 +42,23 @@ public class FilmService {
         return filmStorage.getTop(count);
     }
 
-    public Collection<Film> getAll() {
-        return filmStorage.getAll();
+    public Collection<FilmResponseDto> getAll() {
+        return filmStorage.getAll().stream()
+                .map(filmMapper::mapToFilmDto)
+                .collect(Collectors.toList());
     }
 
-    public Film getFilm(Long id) {
-        return filmStorage.getFilm(id);
+    public FilmResponseDto getFilm(Long id) {
+        Film film = filmStorage.getFilm(id);
+        return filmMapper.mapToFilmDto(film);
     }
 
-    public Film create(Film film) {
-        film.clearLikes();
-        return filmStorage.create(film);
+    public FilmResponseDto create(@Valid FilmCreateDto filmDto) {
+        // Check exists
+        Rating rating = ratingStorage.getRating(filmDto.getMpa().getId());
+        Film film = filmMapper.mapToFilm(filmDto, rating);
+        Film created = filmStorage.create(film);
+        return filmMapper.mapToFilmDto(created);
     }
 
     public Film update(Film film) {
@@ -60,6 +76,6 @@ public class FilmService {
         if (film.getReleaseDate() != null)
             origin.setReleaseDate(film.getReleaseDate());
 
-        return filmStorage.update(film);
+        return filmStorage.update(origin);
     }
 }

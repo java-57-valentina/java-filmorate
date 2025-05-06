@@ -25,7 +25,7 @@ public class RatingController {
 
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public RatingDto getGenre(@PathVariable Integer id) {
+    public RatingDto getGenre(@PathVariable Short id) {
         return ratingService.getRating(id);
     }
 }

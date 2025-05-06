@@ -1,19 +1,27 @@
-DELETE FROM genres;
-DELETE FROM ratings;
+-- SELECT * FROM genres;
+
+-- DELETE FROM genres;
+-- DELETE FROM ratings;
 -- DELETE FROM users;
+-- DELETE FROM films;
 
-INSERT INTO genres (name) VALUES ('Action');
-INSERT INTO genres (name) VALUES ('Comedy');
-INSERT INTO genres (name) VALUES ('Drama');
-INSERT INTO genres (name) VALUES ('Fantasy');
-INSERT INTO genres (name) VALUES ('Horror');
-INSERT INTO genres (name) VALUES ('Mystery');
-INSERT INTO genres (name) VALUES ('Romance');
-INSERT INTO genres (name) VALUES ('Thriller');
-INSERT INTO genres (name) VALUES ('Western');
+INSERT INTO genres (name) SELECT 'Комедия' WHERE NOT EXISTS (SELECT 1 FROM genres WHERE name = 'Комедия');
+INSERT INTO genres (name) SELECT 'Драма' WHERE NOT EXISTS (SELECT 1 FROM genres WHERE name = 'Драма');
+INSERT INTO genres (name) SELECT 'Мультфильм' WHERE NOT EXISTS (SELECT 1 FROM genres WHERE name = 'Мультфильм');
+INSERT INTO genres (name) SELECT 'Триллер' WHERE NOT EXISTS (SELECT 1 FROM genres WHERE name = 'Триллер');
+INSERT INTO genres (name) SELECT 'Документальный' WHERE NOT EXISTS (SELECT 1 FROM genres WHERE name = 'Документальный');
+INSERT INTO genres (name) SELECT 'Боевик' WHERE NOT EXISTS (SELECT 1 FROM genres WHERE name = 'Боевик');
 
-INSERT INTO ratings (name) VALUES ('G');
-INSERT INTO ratings (name) VALUES ('PG');
-INSERT INTO ratings (name) VALUES ('PG-13');
-INSERT INTO ratings (name) VALUES ('R');
-INSERT INTO ratings (name) VALUES ('NC-17');
+INSERT INTO ratings (name) SELECT 'G' WHERE NOT EXISTS (SELECT 1 FROM ratings WHERE name = 'G');
+INSERT INTO ratings (name) SELECT 'PG' WHERE NOT EXISTS (SELECT 1 FROM ratings WHERE name = 'PG');
+INSERT INTO ratings (name) SELECT 'PG-13' WHERE NOT EXISTS (SELECT 1 FROM ratings WHERE name = 'PG-13');
+INSERT INTO ratings (name) SELECT 'R' WHERE NOT EXISTS (SELECT 1 FROM ratings WHERE name = 'R');
+INSERT INTO ratings (name) SELECT 'NC-17' WHERE NOT EXISTS (SELECT 1 FROM ratings WHERE name = 'NC-17');
+
+
+--INSERT INTO films (title, description, release_date, duration, rating_id)
+--VALUES('Титаник', 'Скучный фильм', '2000-01-01', 120, 3)
+
+
+
+

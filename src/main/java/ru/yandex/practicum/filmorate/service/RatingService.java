@@ -21,12 +21,12 @@ public class RatingService {
     public Collection<RatingDto> getAll() {
         return ratingStorage.findAll()
                 .stream()
-                .map(ratingMapper::mapToGenreDto)
+                .map(ratingMapper::mapToDto)
                 .collect(Collectors.toList());
     }
 
-    public RatingDto getRating(Integer id) {
+    public RatingDto getRating(Short id) {
         Rating found = ratingStorage.getRating(id);
-        return ratingMapper.mapToGenreDto(found);
+        return ratingMapper.mapToDto(found);
     }
 }

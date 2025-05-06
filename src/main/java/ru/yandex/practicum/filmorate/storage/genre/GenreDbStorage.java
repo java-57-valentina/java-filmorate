@@ -12,7 +12,7 @@ import java.util.Optional;
 @Repository
 public class GenreDbStorage extends BaseStorage<Genre> {
 
-    private static final String SQL_SELECT_ALL =  "SELECT * FROM genres";
+    private static final String SQL_SELECT_ALL =  "SELECT * FROM genres ORDER BY id";
     private static final String SQL_INSERT = "INSERT INTO genres (name) VALUES (?)";
     private static final String SQL_SELECT_ONE = "SELECT * FROM genres WHERE id = ?";
     private static final String SQL_UPDATE = "UPDATE genres SET name = ? WHERE id = ?";
