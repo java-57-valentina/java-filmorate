@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.dto.FilmCreateDto;
 import ru.yandex.practicum.filmorate.dto.FilmResponseDto;
+import ru.yandex.practicum.filmorate.dto.FilmUpdateDto;
 import ru.yandex.practicum.filmorate.mapper.FilmMapper;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Rating;
@@ -61,7 +62,7 @@ public class FilmService {
         return filmMapper.mapToFilmDto(created);
     }
 
-    public Film update(Film film) {
+    public FilmResponseDto update(@Valid FilmUpdateDto film) {
 
         Film origin = filmStorage.getFilm(film.getId());
         if (film.getName() != null)
@@ -76,6 +77,7 @@ public class FilmService {
         if (film.getReleaseDate() != null)
             origin.setReleaseDate(film.getReleaseDate());
 
-        return filmStorage.update(origin);
+        Film updated = filmStorage.update(origin);
+        return filmMapper.mapToFilmDto(updated);
     }
 }

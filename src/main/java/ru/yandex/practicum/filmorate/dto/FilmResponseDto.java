@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 
 import java.time.LocalDate;
+import java.util.Collection;
 
 @Data
 @AllArgsConstructor
@@ -14,4 +15,5 @@ public class FilmResponseDto {
     Integer duration;
     LocalDate releaseDate;
     RatingDto mpa;
+    Collection<GenreDto> genres;
 }

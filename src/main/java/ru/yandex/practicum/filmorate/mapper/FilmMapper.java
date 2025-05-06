@@ -8,6 +8,8 @@ import ru.yandex.practicum.filmorate.dto.RatingDto;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Rating;
 
+import java.util.List;
+
 @Component
 @RequiredArgsConstructor
 public class FilmMapper {
@@ -32,7 +34,8 @@ public class FilmMapper {
                 film.getDescription(),
                 film.getDuration(),
                 film.getReleaseDate(),
-                mpa
+                mpa,
+                List.of()
         );
     }
 }

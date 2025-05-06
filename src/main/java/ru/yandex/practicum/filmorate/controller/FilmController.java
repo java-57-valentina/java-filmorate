@@ -3,12 +3,12 @@ package ru.yandex.practicum.filmorate.controller;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.dto.FilmCreateDto;
+import ru.yandex.practicum.filmorate.dto.FilmDto;
 import ru.yandex.practicum.filmorate.dto.FilmResponseDto;
+import ru.yandex.practicum.filmorate.dto.FilmUpdateDto;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
-import ru.yandex.practicum.filmorate.model.AdvanceInfo;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.service.FilmService;
 
@@ -45,9 +45,9 @@ public class FilmController {
     }
 
     @PutMapping
-    public Film update(@Validated (AdvanceInfo.class) @RequestBody Film film) {
-        // validate(film);
-        Film updated = filmService.update(film);
+    public FilmResponseDto update(@Valid @RequestBody FilmUpdateDto film) {
+        validate(film);
+        FilmResponseDto updated = filmService.update(film);
         log.info("Film id:{} was updated: {}", updated.getId(), updated);
         return updated;
     }
@@ -74,7 +74,7 @@ public class FilmController {
         return filmService.getTop(count);
     }
 
-    private void validate(@Valid FilmCreateDto film) throws ValidationException {
+    private void validate(@Valid FilmDto film) throws ValidationException {
         if (film.getReleaseDate().isBefore(FIRST_FILM_RELEASE_DATE))
             throw new ValidationException("The release date cannot be earlier "
                     + FIRST_FILM_RELEASE_DATE.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
