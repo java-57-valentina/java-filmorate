@@ -3,6 +3,7 @@ package ru.yandex.practicum.filmorate.storage.user;
 import org.springframework.context.annotation.Primary;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
+import ru.yandex.practicum.filmorate.exception.AlreadyFriendException;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.base.BaseStorage;
@@ -26,6 +27,34 @@ public class UserDbStorage extends BaseStorage<User> implements UserStorage {
             WHERE id = ?
             """;
     private static final String SQL_SELECT_ONE = "SELECT * FROM users WHERE id = ?";
+    private static final String SQL_CHECK_FRIENDSHIP = """
+            SELECT EXISTS (
+                SELECT 1 FROM friendship
+                WHERE user_id = ? AND friend_id = ?
+            )
+            """;
+    private static final String SQL_ADD_FRIEND = """
+            INSERT INTO friendship(user_id, friend_id)
+            VALUES(?, ?)
+            """;
+    private static final String SQL_SELECT_FRIENDS = """
+            SELECT u.*
+            FROM users u
+            JOIN friendship f ON u.id = f.friend_id
+            WHERE f.user_id = ?;
+            """;
+    private static final String SQL_SELECT_COMMON_FRIENDS = """
+            SELECT u.*
+            FROM friendship f1
+            JOIN friendship f2 ON f1.friend_id = f2.friend_id
+            JOIN users u ON u.id = f1.friend_id
+            WHERE f1.user_id = ?
+              AND f2.user_id = ?
+            """;
+    private static final String SQL_REMOVE_FRIEND = """
+            DELETE FROM friendship
+            WHERE user_id = ? AND friend_id = ?
+            """;
 
     public UserDbStorage(JdbcTemplate jdbcTemplate, UserRowMapper rowMapper) {
         super(jdbcTemplate, rowMapper);
@@ -71,5 +100,43 @@ public class UserDbStorage extends BaseStorage<User> implements UserStorage {
         if (one.isEmpty())
             throw new NotFoundException("User id:" + id + " not found");
         return one.get();
+    }
+
+    @Override
+    public void addFriend(User user, Long friendId) {
+
+        Boolean alreadyAdded = jdbcTemplate.queryForObject(
+                SQL_CHECK_FRIENDSHIP,
+                Boolean.class,
+                user.getId(),
+                friendId
+        );
+
+        if (Boolean.TRUE.equals(alreadyAdded)) {
+            throw new AlreadyFriendException(user.getId(), friendId);
+        }
+
+        // Создаём/принимаем заявку
+        int updatedRows = update(SQL_ADD_FRIEND, user.getId(), friendId);
+    }
+
+    @Override
+    public void removeFriend(Long id, Long friendId) {
+        getUser(id); // check exists
+        getUser(friendId); // check exists
+        int updatedRows = update(SQL_REMOVE_FRIEND, id, friendId);
+    }
+
+    @Override
+    public Collection<User> getFriendsOfUser(Long id) {
+        getUser(id); // check exists
+        return getMany(SQL_SELECT_FRIENDS, id);
+    }
+
+    @Override
+    public Collection<User> getCommonFriends(Long id, Long otherId) {
+        getUser(id); // check exists
+        getUser(otherId); // check exists
+        return getMany(SQL_SELECT_COMMON_FRIENDS, id, otherId);
     }
 }

@@ -72,35 +72,32 @@ public class UserService {
         User user = userStorage.getUser(id);
         User friend = userStorage.getUser(friendId);
 
-        user.addFriend(friendId);
-        friend.addFriend(id);
+        userStorage.addFriend(user, friendId);
     }
 
     public void removeFriend(Long id, Long friendId) {
-        User user1 = userStorage.getUser(id);
-        User user2 = userStorage.getUser(friendId);
+        if (id.equals(friendId))
+            throw new ValidationException(id + " = " + friendId);
 
-        user1.removeFriend(friendId);
-        user2.removeFriend(id);
+        userStorage.removeFriend(id, friendId);
     }
 
-    public Set<User> getCommonFriends(Long id, Long otherId) {
+    public Set<UserResponseDto> getCommonFriends(Long id, Long otherId) {
         if (id.equals(otherId))
             return Set.of();
 
-        Set<Long> friends1 = userStorage.getUser(id).getFriends();
-        Set<Long> friends2 = userStorage.getUser(otherId).getFriends();
-
-        return friends1.stream()
-                .filter(friends2::contains)
-                .map(userStorage::getUser)
+        Collection<User> commonFriends = userStorage.getCommonFriends(id, otherId);
+        return commonFriends.stream()
+                .map(userMapper::mapToUserDto)
                 .collect(Collectors.toSet());
     }
 
-    public Collection<User> getFriends(Long id) {
-        User user = userStorage.getUser(id);
-        return user.getFriends().stream()
-                .map(userStorage::getUser)
-                .collect(Collectors.toList());
+    public Collection<UserResponseDto> getFriends(Long id) {
+
+        Collection<UserResponseDto> friends = userStorage.getFriendsOfUser(id).stream()
+                .map(userMapper::mapToUserDto)
+                .toList();
+        log.debug("User id:{} has {} friends", id, friends.size());
+        return friends;
     }
 }

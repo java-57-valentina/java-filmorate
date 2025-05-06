@@ -1,7 +1,6 @@
 package ru.yandex.practicum.filmorate.model;
 
 import lombok.Data;
-import ru.yandex.practicum.filmorate.exception.AlreadyFriendException;
 
 import java.time.LocalDate;
 import java.util.HashSet;
@@ -17,9 +16,8 @@ public class User {
     private LocalDate birthday;
     private Set<Long> friends = new HashSet<>();
 
-    public void addFriend(Long id) {
-        if (!friends.add(id))
-            throw new AlreadyFriendException(this.id, id);
+    public boolean addFriend(Long id) {
+        return friends.add(id);
     }
 
     public void removeFriend(Long id) {

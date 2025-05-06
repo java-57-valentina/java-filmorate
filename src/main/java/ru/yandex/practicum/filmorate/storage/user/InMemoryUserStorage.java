@@ -1,11 +1,13 @@
 package ru.yandex.practicum.filmorate.storage.user;
 
 import org.springframework.stereotype.Component;
+import ru.yandex.practicum.filmorate.exception.AlreadyFriendException;
 import ru.yandex.practicum.filmorate.exception.EmailAlreadyTakenException;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Component
 public class InMemoryUserStorage implements UserStorage {
@@ -58,6 +60,39 @@ public class InMemoryUserStorage implements UserStorage {
         if (user == null)
             throw new NotFoundException("User id:" + id + " not found");
         return user;
+    }
+
+    @Override
+    public void addFriend(User user, Long friendId) {
+        if (!user.addFriend(friendId))
+            throw new AlreadyFriendException(user.getId(), friendId);
+    }
+
+    @Override
+    public void removeFriend(Long id, Long friendId) {
+        User user1 = getUser(id);
+        User user2 = getUser(friendId);
+
+        user1.removeFriend(friendId);
+        user2.removeFriend(id);
+    }
+
+    @Override
+    public Collection<User> getFriendsOfUser(Long id) {
+        return getUser(id).getFriends().stream()
+                .map(this::getUser)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public Collection<User> getCommonFriends(Long id, Long otherId) {
+        Set<Long> friends1 = getUser(id).getFriends();
+        Set<Long> friends2 = getUser(otherId).getFriends();
+
+        return friends1.stream()
+                .filter(friends2::contains)
+                .map(this::getUser)
+                .collect(Collectors.toSet());
     }
 
     private long getNextId() {

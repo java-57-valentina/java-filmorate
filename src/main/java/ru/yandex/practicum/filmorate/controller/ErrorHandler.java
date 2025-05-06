@@ -21,7 +21,12 @@ public class ErrorHandler {
         return new ErrorResponse(e.getMessage());
     }
 
-    @ExceptionHandler({AlreadyLikedException.class, LikeNotFoundException.class, EmailAlreadyTakenException.class})
+    @ExceptionHandler({
+            AlreadyLikedException.class,
+            AlreadyFriendException.class,
+            FriendNotFoundException.class,
+            LikeNotFoundException.class,
+            EmailAlreadyTakenException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleLikeException(final RuntimeException e) {
         return new ErrorResponse(e.getMessage());
