@@ -103,27 +103,29 @@ public class UserDbStorage extends BaseStorage<User> implements UserStorage {
     }
 
     @Override
-    public void addFriend(User user, Long friendId) {
+    public void addFriend(Long id, Long friendId) {
+        getUser(id);        // check exists
+        getUser(friendId);  // check exists
 
         Boolean alreadyAdded = jdbcTemplate.queryForObject(
                 SQL_CHECK_FRIENDSHIP,
                 Boolean.class,
-                user.getId(),
+                id,
                 friendId
         );
 
         if (Boolean.TRUE.equals(alreadyAdded)) {
-            throw new AlreadyFriendException(user.getId(), friendId);
+            throw new AlreadyFriendException(id, friendId);
         }
 
         // Создаём/принимаем заявку
-        int updatedRows = update(SQL_ADD_FRIEND, user.getId(), friendId);
+        int updatedRows = update(SQL_ADD_FRIEND, id, friendId);
     }
 
     @Override
     public void removeFriend(Long id, Long friendId) {
-        getUser(id); // check exists
-        getUser(friendId); // check exists
+        getUser(id);        // check exists
+        getUser(friendId);  // check exists
         int updatedRows = update(SQL_REMOVE_FRIEND, id, friendId);
     }
 
@@ -135,8 +137,8 @@ public class UserDbStorage extends BaseStorage<User> implements UserStorage {
 
     @Override
     public Collection<User> getCommonFriends(Long id, Long otherId) {
-        getUser(id); // check exists
-        getUser(otherId); // check exists
+        getUser(id);        // check exists
+        getUser(otherId);   // check exists
         return getMany(SQL_SELECT_COMMON_FRIENDS, id, otherId);
     }
 }

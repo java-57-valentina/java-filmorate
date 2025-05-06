@@ -69,10 +69,7 @@ public class UserService {
         if (id.equals(friendId))
             throw new ValidationException(id + " = " + friendId);
 
-        User user = userStorage.getUser(id);
-        User friend = userStorage.getUser(friendId);
-
-        userStorage.addFriend(user, friendId);
+        userStorage.addFriend(id, friendId);
     }
 
     public void removeFriend(Long id, Long friendId) {

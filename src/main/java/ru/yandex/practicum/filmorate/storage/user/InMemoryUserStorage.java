@@ -63,7 +63,10 @@ public class InMemoryUserStorage implements UserStorage {
     }
 
     @Override
-    public void addFriend(User user, Long friendId) {
+    public void addFriend(Long id, Long friendId) {
+        User user = getUser(id);
+        User friend = getUser(friendId); // check exists
+
         if (!user.addFriend(friendId))
             throw new AlreadyFriendException(user.getId(), friendId);
     }
