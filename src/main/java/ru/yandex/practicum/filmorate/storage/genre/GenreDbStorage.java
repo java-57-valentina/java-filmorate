@@ -65,19 +65,20 @@ public class GenreDbStorage extends BaseStorage<Genre> implements GenreStorage {
     }
 
     @Override
-    public List<Short> checkAllExists(Collection<Short> idsToCheck) {
+    public List<Short> checkAllExists(List<Short> idsToCheck) {
         if (idsToCheck.isEmpty()) {
             return Collections.emptyList();
         }
 
-        String valuesList = idsToCheck.stream()
-                .map(n -> "(" + n + ")")
-                .collect(Collectors.joining(", "));
+        String sql = "SELECT t.id FROM (VALUES " +
+                idsToCheck.stream()
+                        .map(id -> "(?)")
+                        .collect(Collectors.joining(",")) +
+                ") AS t(id) WHERE t.id NOT IN (SELECT id FROM genres)";
 
-        String sql = "SELECT DISTINCT * " +
-                "FROM (VALUES " + valuesList + ") AS X(id) " +
-                "WHERE X.id NOT IN (SELECT id FROM genres)";
-        List<Short> invalidIds = jdbcTemplate.queryForList(sql, Short.class);
+        List<Short> invalidIds = jdbcTemplate.queryForList(sql, Short.class, idsToCheck.toArray());
+
+
         System.out.println("invalidIds = " + invalidIds);
         return invalidIds;
     }

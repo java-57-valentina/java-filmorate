@@ -16,5 +16,5 @@ public interface GenreStorage {
 
     boolean delete(Short id);
 
-    List<Short> checkAllExists(Collection<Short> genres);
+    List<Short> checkAllExists(List<Short> genres);
 }

@@ -115,8 +115,8 @@ public class UserDbStorage extends BaseStorage<User> implements UserStorage {
 
     @Override
     public void addFriend(Long id, Long friendId) {
-        checkUserExists(id);        // check exists
-        checkUserExists(friendId);  // check exists
+        checkUserExists(id);
+        checkUserExists(friendId);
 
         Boolean alreadyAdded = jdbcTemplate.queryForObject(
                 SQL_CHECK_FRIENDSHIP,

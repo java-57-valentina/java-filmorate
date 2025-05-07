@@ -126,7 +126,7 @@ public class FilmDbStorage extends BaseStorage<Film> implements FilmStorage {
     private void saveFilmGenres(Film film) {
         final Collection<Short> genres = film.getGenres();
 
-        List<Short> invalidIds = genreStorage.checkAllExists(genres);
+        List<Short> invalidIds = genreStorage.checkAllExists(genres.stream().toList());
         if (!invalidIds.isEmpty())
             throw new NotFoundException("Genres are invalid: " + invalidIds);
 
