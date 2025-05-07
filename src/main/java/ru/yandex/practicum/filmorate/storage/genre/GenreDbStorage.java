@@ -76,7 +76,7 @@ public class GenreDbStorage extends BaseStorage<Genre> implements GenreStorage {
 
         String sql = "SELECT DISTINCT * " +
                 "FROM (VALUES " + valuesList + ") AS X(id) " +
-                "WHERE X.id NOT IN (SELECT id FROM genres)" ;
+                "WHERE X.id NOT IN (SELECT id FROM genres)";
         List<Short> invalidIds = jdbcTemplate.queryForList(sql, Short.class);
         System.out.println("invalidIds = " + invalidIds);
         return invalidIds;
