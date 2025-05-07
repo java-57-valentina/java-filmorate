@@ -21,9 +21,9 @@ public class FilmDbStorage extends BaseStorage<Film> implements FilmStorage {
     final GenreStorage genreStorage;
 
     private static final String SQL_SELECT_ALL = """
-            SELECT f.*, r.name as mpa
+            SELECT f.*, m.name as mpa_name
             FROM films f
-            LEFT JOIN ratings r ON r.id = f.rating_id
+            LEFT JOIN mpa m ON m.id = f.mpa_id
             """;
 
     private static final String SQL_SELECT_ONE =
@@ -32,7 +32,7 @@ public class FilmDbStorage extends BaseStorage<Film> implements FilmStorage {
     private static final String SQL_CHECK_FILM_EXISTS =
             "SELECT COUNT(*) > 0 FROM films WHERE id = ?";
     private static final String SQL_INSERT = """
-            INSERT INTO films (title, description, duration, release_date, rating_id)
+            INSERT INTO films (title, description, duration, release_date, mpa_id)
             VALUES (?, ?, ?, ?, ?)
             """;
 
@@ -52,9 +52,9 @@ public class FilmDbStorage extends BaseStorage<Film> implements FilmStorage {
             """;
 
     private static final String SQL_SELECT_POPULAR = """
-        SELECT f.*, r.name as mpa, COUNT(l.id) AS likes_count
+        SELECT f.*, m.name as mpa_name, COUNT(l.id) AS likes_count
         FROM films f
-        LEFT JOIN ratings r ON r.id = f.rating_id
+        LEFT JOIN mpa m ON m.id = f.mpa_id
         LEFT JOIN likes l ON f.id = l.film_id
         GROUP BY f.id
         ORDER BY likes_count DESC

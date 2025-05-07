@@ -25,8 +25,8 @@ public class FilmRowMapper implements RowMapper<Film> {
         film.setDuration(rs.getInt("duration"));
 
         Rating rating = new Rating(
-                rs.getShort("rating_id"),
-                rs.getString("mpa")
+                rs.getShort("mpa_id"),
+                rs.getString("mpa_name")
         );
 
         film.setMpa(rating);
