@@ -24,10 +24,14 @@ public class FilmMapper {
         film.setReleaseDate(request.getReleaseDate());
         film.setDuration(request.getDuration());
         film.setMpa(new Mpa(request.getMpa().getId(), mpaDto.getName()));
-        film.setGenres(
-                request.getGenres().stream()
-                        .map(genreMapper::mapToGenre)
-                        .collect(Collectors.toSet()));
+
+        if (request.getGenres() != null) {
+            film.setGenres(
+                    request.getGenres().stream()
+                            .map(genreMapper::mapToGenre)
+                            .collect(Collectors.toSet()));
+        }
+
         return film;
     }
 

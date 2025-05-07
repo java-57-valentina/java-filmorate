@@ -5,7 +5,7 @@ import lombok.Data;
 
 import java.time.LocalDate;
 import java.util.Collection;
-import java.util.List;
+
 
 @Data
 public class FilmDto {
@@ -41,6 +41,5 @@ public class FilmDto {
     @NotNull(groups = CreateInfo.class)
     private MpaDto mpa;
 
-    @NotNull(groups = CreateInfo.class)
-    private Collection<GenreDto> genres = List.of();
+    private Collection<GenreDto> genres = null;
 }

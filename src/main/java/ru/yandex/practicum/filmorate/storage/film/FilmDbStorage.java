@@ -127,6 +127,9 @@ public class FilmDbStorage extends BaseStorage<Film> implements FilmStorage {
                 film.getMpa().getId(),
                 film.getId());
 
+        System.out.println("film.getGenres = " + film.getGenres());
+        saveFilmGenres(film);
+        film.setGenres(genreStorage.getFilmGenres(film.getId()));
         return film;
     }
 

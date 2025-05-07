@@ -6,6 +6,7 @@ import ru.yandex.practicum.filmorate.dto.FilmDto;
 import ru.yandex.practicum.filmorate.dto.FilmResponseDto;
 import ru.yandex.practicum.filmorate.mapper.FilmMapper;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.Mpa;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.mpa.MpaStorage;
@@ -67,6 +68,11 @@ public class FilmService {
 
         if (film.getMpa() != null)
             origin.setMpa(mpaStorage.getMpa(film.getMpa().getId()));
+
+        if (film.getGenres() != null)
+            origin.setGenres(film.getGenres().stream()
+                    .map(genreDto -> new Genre(genreDto.getId(), genreDto.getName()))
+                    .collect(Collectors.toList()));
 
         Film updated = filmStorage.update(origin);
         return filmMapper.mapToFilmDto(updated);
