@@ -26,4 +26,15 @@ public class LikeService {
 
         likeStorage.save(filmId, userId);
     }
+
+    public void removeLike(Long filmId, Long userId) {
+        userStorage.checkUserExists(userId);
+        filmStorage.checkFilmExists(filmId);
+
+        if (!likeStorage.existsLike(filmId, userId)) {
+            throw new ValidationException("Film was not liked by user");
+        }
+
+        likeStorage.delete(filmId, userId);
+    }
 }

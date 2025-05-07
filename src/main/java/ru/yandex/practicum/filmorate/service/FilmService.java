@@ -22,13 +22,6 @@ public class FilmService {
     private final RatingStorage ratingStorage;
     private final FilmMapper filmMapper;
 
-    public Film removeLike(Long id, Long userId) {
-        Film film = filmStorage.getFilm(id);
-        userStorage.getUser(userId);
-        film.removeLike(userId);
-        return film;
-    }
-
     public Collection<FilmResponseDto> getTop(int count) {
         return filmStorage.getTop(count).stream()
                 .map(filmMapper::mapToFilmDto)

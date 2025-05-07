@@ -18,6 +18,10 @@ public class LikeDbStorage extends BaseStorage<Like> implements LikeStorage {
             INSERT INTO likes(film_id, user_id)
             VALUES(?, ?)
             """;
+    private static final String SQL_REMOVE_LIKE = """
+            DELETE FROM likes
+            WHERE film_id = ? AND user_id = ?
+            """;
 
     @Autowired
     public LikeDbStorage(JdbcTemplate jdbcTemplate, LikeRowMapper rowMapper) {
@@ -27,6 +31,11 @@ public class LikeDbStorage extends BaseStorage<Like> implements LikeStorage {
     @Override
     public void save(Long filmId, Long userId) {
         jdbcTemplate.update(SQL_ADD_LIKE, filmId, userId);
+    }
+
+    @Override
+    public void delete(Long filmId, Long userId) {
+        jdbcTemplate.update(SQL_REMOVE_LIKE, filmId, userId);
     }
 
     @Override

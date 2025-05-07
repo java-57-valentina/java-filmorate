@@ -4,9 +4,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.dto.*;
+import ru.yandex.practicum.filmorate.dto.CreateInfo;
+import ru.yandex.practicum.filmorate.dto.FilmDto;
+import ru.yandex.practicum.filmorate.dto.FilmResponseDto;
+import ru.yandex.practicum.filmorate.dto.UpdateInfo;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
-import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.service.FilmService;
 import ru.yandex.practicum.filmorate.service.LikeService;
 
@@ -61,10 +63,10 @@ public class FilmController {
     }
 
     @DeleteMapping("/{id}/like/{userId}")
-    public Film unlike(@PathVariable Long id, @PathVariable Long userId) {
-        Film film = filmService.removeLike(id, userId);
+    public FilmResponseDto unlike(@PathVariable Long id, @PathVariable Long userId) {
+        likeService.removeLike(id, userId);
         log.info("User id:{} has removed like from film id:{}", userId, id);
-        return film;
+        return filmService.getFilm(id);
     }
 
     @GetMapping("/popular")
