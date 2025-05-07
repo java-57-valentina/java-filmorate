@@ -27,6 +27,7 @@ public class UserDbStorage extends BaseStorage<User> implements UserStorage {
             WHERE id = ?
             """;
     private static final String SQL_SELECT_ONE = "SELECT * FROM users WHERE id = ?";
+
     private static final String SQL_CHECK_FRIENDSHIP = """
             SELECT EXISTS (
                 SELECT 1 FROM friendship
@@ -56,6 +57,8 @@ public class UserDbStorage extends BaseStorage<User> implements UserStorage {
             WHERE user_id = ? AND friend_id = ?
             """;
     private static final String SQL_CHECK_USER_EXISTS = "SELECT EXISTS(SELECT 1 FROM users WHERE id = ?)";
+    private static final String SQL_CHECK_EMAIL_USED = "SELECT EXISTS(SELECT 1 FROM users WHERE email = ?)";
+
 
 
     public UserDbStorage(JdbcTemplate jdbcTemplate, UserRowMapper rowMapper) {
@@ -109,6 +112,11 @@ public class UserDbStorage extends BaseStorage<User> implements UserStorage {
         if (one.isEmpty())
             throw new NotFoundException("User id:" + id + " not found");
         return one.get();
+    }
+
+    @Override
+    public boolean isEmailUsed(String email) {
+        return exists(SQL_CHECK_EMAIL_USED, email);
     }
 
     @Override

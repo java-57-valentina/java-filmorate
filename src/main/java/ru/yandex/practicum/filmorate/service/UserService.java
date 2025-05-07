@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.dto.UserCreateDto;
 import ru.yandex.practicum.filmorate.dto.UserResponseDto;
 import ru.yandex.practicum.filmorate.dto.UserUpdateDto;
+import ru.yandex.practicum.filmorate.exception.EmailAlreadyTakenException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.mapper.UserMapper;
 import ru.yandex.practicum.filmorate.model.User;
@@ -35,6 +36,10 @@ public class UserService {
     }
 
     public UserResponseDto create(UserCreateDto userCreateDto) {
+        if (userStorage.isEmailUsed(userCreateDto.getEmail())) {
+            throw new EmailAlreadyTakenException(userCreateDto.getEmail());
+        }
+
         User userToCreate = userMapper.mapToUser(userCreateDto);
         User created = userStorage.save(userToCreate);
         if (created == null)
@@ -46,8 +51,12 @@ public class UserService {
     public UserResponseDto update(UserUpdateDto user) {
         User origin = userStorage.getUser(user.getId());
 
-        if (user.getEmail() != null)
+        if (user.getEmail() != null && !user.getEmail().equals(origin.getEmail())) {
+            if (userStorage.isEmailUsed(user.getEmail()))
+                throw new EmailAlreadyTakenException(user.getEmail());
+
             origin.setEmail(user.getEmail());
+        }
 
         if (user.getBirthday() != null)
             origin.setBirthday(user.getBirthday());

@@ -23,4 +23,6 @@ public interface UserStorage {
     Collection<User> getCommonFriends(Long id, Long otherId);
 
     void removeFriend(Long id, Long friendId);
+
+    boolean isEmailUsed(String email);
 }

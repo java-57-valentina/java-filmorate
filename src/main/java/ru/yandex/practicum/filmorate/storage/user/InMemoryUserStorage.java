@@ -28,8 +28,6 @@ public class InMemoryUserStorage implements UserStorage {
 
     @Override
     public  User save(User user) {
-        if (emails.contains(user.getEmail()))
-            throw new EmailAlreadyTakenException(user.getEmail());
 
         if (user.getName() == null || user.getName().isBlank())
             user.setName(user.getLogin());
@@ -81,6 +79,11 @@ public class InMemoryUserStorage implements UserStorage {
     public void removeFriend(Long id, Long friendId) {
         User user = getUser(id);
         user.removeFriend(friendId);
+    }
+
+    @Override
+    public boolean isEmailUsed(String email) {
+        return emails.contains(email);
     }
 
     @Override
