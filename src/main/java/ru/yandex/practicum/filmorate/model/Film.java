@@ -5,7 +5,9 @@ import ru.yandex.practicum.filmorate.exception.AlreadyLikedException;
 import ru.yandex.practicum.filmorate.exception.LikeNotFoundException;
 
 import java.time.LocalDate;
+import java.util.Collection;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 
 
@@ -26,6 +28,8 @@ public class Film {
     private Set<Long> likes = new LinkedHashSet<>();
 
     private Rating mpa;
+
+    private Collection<Short> genres = List.of();
 
     public void addLike(Long userId) {
         if (!likes.add(userId))

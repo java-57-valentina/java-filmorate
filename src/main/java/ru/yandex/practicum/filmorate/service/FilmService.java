@@ -9,6 +9,7 @@ import ru.yandex.practicum.filmorate.dto.FilmUpdateDto;
 import ru.yandex.practicum.filmorate.mapper.FilmMapper;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Rating;
+import ru.yandex.practicum.filmorate.storage.genre.GenreStorage;
 import ru.yandex.practicum.filmorate.storage.rating.RatingStorage;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
@@ -22,6 +23,7 @@ public class FilmService {
     private final UserStorage userStorage;
     private final FilmStorage filmStorage;
     private final RatingStorage ratingStorage;
+    private final GenreStorage genreStorage;
 
     private final FilmMapper filmMapper;
 
@@ -57,7 +59,11 @@ public class FilmService {
     public FilmResponseDto create(@Valid FilmCreateDto filmDto) {
         // Check exists
         Rating rating = ratingStorage.getRating(filmDto.getMpa().getId());
+
+        System.out.println("filmDto = " + filmDto);
         Film film = filmMapper.mapToFilm(filmDto, rating);
+
+        System.out.println("film = " + film);
         Film created = filmStorage.create(film);
         return filmMapper.mapToFilmDto(created);
     }

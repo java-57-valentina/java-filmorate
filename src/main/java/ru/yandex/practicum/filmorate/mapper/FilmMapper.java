@@ -4,17 +4,19 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.dto.FilmCreateDto;
 import ru.yandex.practicum.filmorate.dto.FilmResponseDto;
+import ru.yandex.practicum.filmorate.dto.GenreDto;
 import ru.yandex.practicum.filmorate.dto.RatingDto;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Rating;
 
-import java.util.List;
+import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
 public class FilmMapper {
 
     final RatingMapper ratingMapper;
+    final GenreMapper genreMapper;
 
     public Film mapToFilm(FilmCreateDto request, Rating ratingDto) {
         Film film = new Film();
@@ -23,11 +25,16 @@ public class FilmMapper {
         film.setReleaseDate(request.getReleaseDate());
         film.setDuration(request.getDuration());
         film.setMpa(new Rating(request.getMpa().getId(), ratingDto.getName()));
+        film.setGenres(
+                request.getGenres().stream()
+                        .map(GenreDto::getId)
+                        .collect(Collectors.toList()));
         return film;
     }
 
     public FilmResponseDto mapToFilmDto(Film film) {
         RatingDto mpa = ratingMapper.mapToDto(film.getMpa());
+
         return new FilmResponseDto(
                 film.getId(),
                 film.getName(),
@@ -35,7 +42,9 @@ public class FilmMapper {
                 film.getDuration(),
                 film.getReleaseDate(),
                 mpa,
-                List.of()
+                film.getGenres().stream()
+                        .map(genreMapper::mapToGenreDto)
+                        .collect(Collectors.toList())
         );
     }
 }

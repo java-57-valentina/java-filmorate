@@ -25,31 +25,13 @@ public class GenreService {
                 .collect(Collectors.toList());
     }
 
-    public GenreDto getGenre(Integer id) {
+    public GenreDto getGenre(Short id) {
         Genre found = genreStorage.getGenre(id);
         return genreMapper.mapToGenreDto(found);
     }
 
-    public GenreDto create(GenreDto genreDto) {
-        Genre genreToCreate = genreMapper.mapToGenre(genreDto);
-        Genre created = genreStorage.create(genreToCreate);
-        if (created == null)
-            throw new IllegalStateException("Failed to save data for new genre");
-        log.info("Genre was created: {}", created);
-        return genreMapper.mapToGenreDto(created);
-    }
-
-    public GenreDto update(GenreDto genre) {
-        Genre origin = genreStorage.getGenre(genre.getId());
-        origin.setName(genre.getName());
-        Genre updated = genreStorage.update(origin);
-        if (updated == null)
-            throw new IllegalStateException("Failed to update genre " + genre);
-        return genreMapper.mapToGenreDto(updated);
-    }
-
     @SuppressWarnings("UnusedReturnValue")
-    public boolean delete(Integer id) {
+    public boolean delete(Short id) {
         return genreStorage.delete(id);
     }
 }

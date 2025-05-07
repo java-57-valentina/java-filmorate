@@ -4,6 +4,8 @@ import jakarta.validation.constraints.*;
 import lombok.Data;
 
 import java.time.LocalDate;
+import java.util.Collection;
+import java.util.List;
 
 @Data
 public abstract class FilmDto {
@@ -26,4 +28,7 @@ public abstract class FilmDto {
 
     @NotNull
     private RatingDto mpa;
+
+    @NotNull
+    private Collection<GenreDto> genres = List.of();
 }
