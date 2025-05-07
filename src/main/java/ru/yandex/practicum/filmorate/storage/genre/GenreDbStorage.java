@@ -42,9 +42,9 @@ public class GenreDbStorage extends BaseStorage<Genre> implements GenreStorage {
     }
 
     @Override
-    public Collection<Short> checkAllExists(Set<Short> ids) {
+    public void checkAllExists(Set<Short> ids) throws NotFoundException {
         if (ids.isEmpty()) {
-            return Collections.emptyList();
+            return;
         }
 
         String sql = "SELECT t.id FROM (VALUES " +
@@ -54,8 +54,8 @@ public class GenreDbStorage extends BaseStorage<Genre> implements GenreStorage {
                 ") AS t(id) WHERE t.id NOT IN (SELECT id FROM genres)";
 
         List<Short> invalidIds = jdbcTemplate.queryForList(sql, Short.class, ids.toArray());
-        System.out.println("invalidIds = " + invalidIds);
-        return invalidIds;
+        if (!invalidIds.isEmpty())
+            throw new NotFoundException("Genres are invalid: " + invalidIds);
     }
 
     @Override

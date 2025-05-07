@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.storage.genre;
 
+import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Genre;
 
 import java.util.Collection;
@@ -10,7 +11,7 @@ public interface GenreStorage {
 
     Genre getGenre(Short id);
 
-    Collection<Short> checkAllExists(Set<Short> ids);
+    void checkAllExists(Set<Short> ids) throws NotFoundException;
 
     Collection<Genre> getFilmGenres(Long id);
 }

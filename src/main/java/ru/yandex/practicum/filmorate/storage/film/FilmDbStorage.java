@@ -93,6 +93,12 @@ public class FilmDbStorage extends BaseStorage<Film> implements FilmStorage {
     @Override
     public Film save(Film film) {
 
+        Set<Short> genreIds = film.getGenres().stream()
+                .map(Genre::getId)
+                .collect(Collectors.toSet());
+
+        genreStorage.checkAllExists(genreIds);
+
         Long id = insertAndReturnId(SQL_INSERT,
                 Long.class,
                 film.getName(),
@@ -107,6 +113,7 @@ public class FilmDbStorage extends BaseStorage<Film> implements FilmStorage {
 
         film.setId(id);
         saveFilmGenres(film);
+        film.setGenres(genreStorage.getFilmGenres(id));
         return film;
     }
 
@@ -131,11 +138,9 @@ public class FilmDbStorage extends BaseStorage<Film> implements FilmStorage {
     private void saveFilmGenres(Film film) {
         final Collection<Genre> genres = film.getGenres();
 
-        Set<Short> genreIds = genres.stream().map(Genre::getId).collect(Collectors.toSet());
-        Collection<Short> invalidIds = genreStorage.checkAllExists(genreIds);
-
-        if (!invalidIds.isEmpty())
-            throw new NotFoundException("Genres are invalid: " + invalidIds);
+        Set<Short> genreIds = genres.stream()
+                .map(Genre::getId)
+                .collect(Collectors.toSet());
 
         update(DELETE_FILM_GENRES, film.getId());
 
