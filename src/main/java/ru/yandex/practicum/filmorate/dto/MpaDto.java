@@ -4,7 +4,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 @Data
-public class RatingDto {
+public class MpaDto {
     @NotNull
     Short id;
 

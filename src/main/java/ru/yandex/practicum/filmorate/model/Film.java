@@ -1,6 +1,7 @@
 package ru.yandex.practicum.filmorate.model;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import ru.yandex.practicum.filmorate.exception.AlreadyLikedException;
 import ru.yandex.practicum.filmorate.exception.LikeNotFoundException;
 
@@ -12,6 +13,7 @@ import java.util.Set;
 
 
 @Data
+@NoArgsConstructor
 public class Film {
     public static final int MAX_DESCRIPTION_SIZE = 200;
 
@@ -27,7 +29,7 @@ public class Film {
 
     private Set<Long> likes = new LinkedHashSet<>();
 
-    private Rating mpa;
+    private Mpa mpa;
 
     private Collection<Genre> genres = List.of();
 

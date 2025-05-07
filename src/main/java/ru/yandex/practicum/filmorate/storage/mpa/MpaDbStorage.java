@@ -1,34 +1,34 @@
-package ru.yandex.practicum.filmorate.storage.rating;
+package ru.yandex.practicum.filmorate.storage.mpa;
 
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
-import ru.yandex.practicum.filmorate.model.Rating;
+import ru.yandex.practicum.filmorate.model.Mpa;
 import ru.yandex.practicum.filmorate.storage.base.BaseStorage;
 
 import java.util.Collection;
 import java.util.Optional;
 
 @Repository
-public class RatingDbStorage extends BaseStorage<Rating> implements RatingStorage {
+public class MpaDbStorage extends BaseStorage<Mpa> implements MpaStorage {
 
     private static final String SQL_SELECT_ALL =  "SELECT * FROM mpa ORDER BY id";
     private static final String SQL_SELECT_ONE = "SELECT * FROM mpa WHERE id = ?";
 
-    public RatingDbStorage(JdbcTemplate jdbcTemplate, RatingRowMapper rowMapper) {
+    public MpaDbStorage(JdbcTemplate jdbcTemplate, MpaRowMapper rowMapper) {
         super(jdbcTemplate, rowMapper);
     }
 
     @Override
-    public Collection<Rating> getAll() {
+    public Collection<Mpa> getAll() {
         return getMany(SQL_SELECT_ALL);
     }
 
     @Override
-    public Rating getRating(Short id) {
-        Optional<Rating> one = getOne(SQL_SELECT_ONE, id);
+    public Mpa getMpa(Short id) {
+        Optional<Mpa> one = getOne(SQL_SELECT_ONE, id);
         if (one.isEmpty())
-            throw new NotFoundException("Rating id:" + id + " not found");
+            throw new NotFoundException("Mpa id:" + id + " not found");
         return one.get();
     }
 }

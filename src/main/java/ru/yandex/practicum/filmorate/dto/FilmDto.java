@@ -39,7 +39,7 @@ public class FilmDto {
     private LocalDate releaseDate;
 
     @NotNull(groups = CreateInfo.class)
-    private RatingDto mpa;
+    private MpaDto mpa;
 
     @NotNull(groups = CreateInfo.class)
     private Collection<GenreDto> genres = List.of();

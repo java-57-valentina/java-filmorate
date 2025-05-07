@@ -4,8 +4,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.dto.RatingDto;
-import ru.yandex.practicum.filmorate.service.RatingService;
+import ru.yandex.practicum.filmorate.dto.MpaDto;
+import ru.yandex.practicum.filmorate.service.MpaService;
 
 import java.util.Collection;
 
@@ -13,19 +13,19 @@ import java.util.Collection;
 @RestController
 @RequestMapping("/mpa")
 @RequiredArgsConstructor
-public class RatingController {
+public class MpaController {
 
-    private final RatingService ratingService;
+    private final MpaService mpaService;
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public Collection<RatingDto> getAll() {
-        return ratingService.getAll();
+    public Collection<MpaDto> getAll() {
+        return mpaService.getAll();
     }
 
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public RatingDto getGenre(@PathVariable Short id) {
-        return ratingService.getRating(id);
+    public MpaDto getGenre(@PathVariable Short id) {
+        return mpaService.getMpa(id);
     }
 }

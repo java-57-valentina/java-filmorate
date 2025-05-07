@@ -6,9 +6,9 @@ import ru.yandex.practicum.filmorate.dto.FilmDto;
 import ru.yandex.practicum.filmorate.dto.FilmResponseDto;
 import ru.yandex.practicum.filmorate.mapper.FilmMapper;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.model.Rating;
+import ru.yandex.practicum.filmorate.model.Mpa;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
-import ru.yandex.practicum.filmorate.storage.rating.RatingStorage;
+import ru.yandex.practicum.filmorate.storage.mpa.MpaStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.util.Collection;
@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 public class FilmService {
     private final UserStorage userStorage;
     private final FilmStorage filmStorage;
-    private final RatingStorage ratingStorage;
+    private final MpaStorage mpaStorage;
     private final FilmMapper filmMapper;
 
     public Collection<FilmResponseDto> getTop(int count) {
@@ -40,10 +40,10 @@ public class FilmService {
     }
 
     public FilmResponseDto create(FilmDto filmDto) {
-        Rating rating = ratingStorage.getRating(filmDto.getMpa().getId());
+        Mpa mpa = mpaStorage.getMpa(filmDto.getMpa().getId());
 
         System.out.println("filmDto = " + filmDto);
-        Film film = filmMapper.mapToFilm(filmDto, rating);
+        Film film = filmMapper.mapToFilm(filmDto, mpa);
 
         System.out.println("film = " + film);
         Film created = filmStorage.save(film);
