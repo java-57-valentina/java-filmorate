@@ -1,11 +1,9 @@
 package ru.yandex.practicum.filmorate.service;
 
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.dto.FilmCreateDto;
+import ru.yandex.practicum.filmorate.dto.FilmDto;
 import ru.yandex.practicum.filmorate.dto.FilmResponseDto;
-import ru.yandex.practicum.filmorate.dto.FilmUpdateDto;
 import ru.yandex.practicum.filmorate.mapper.FilmMapper;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Rating;
@@ -48,8 +46,7 @@ public class FilmService {
         return filmMapper.mapToFilmDto(film);
     }
 
-    public FilmResponseDto create(@Valid FilmCreateDto filmDto) {
-        // Check exists
+    public FilmResponseDto create(FilmDto filmDto) {
         Rating rating = ratingStorage.getRating(filmDto.getMpa().getId());
 
         System.out.println("filmDto = " + filmDto);
@@ -60,7 +57,7 @@ public class FilmService {
         return filmMapper.mapToFilmDto(created);
     }
 
-    public FilmResponseDto update(@Valid FilmUpdateDto film) {
+    public FilmResponseDto update(FilmDto film) {
 
         Film origin = filmStorage.getFilm(film.getId());
         if (film.getName() != null)

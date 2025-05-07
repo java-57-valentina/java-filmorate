@@ -8,27 +8,39 @@ import java.util.Collection;
 import java.util.List;
 
 @Data
-public abstract class FilmDto {
+public class FilmDto {
     public static final int MAX_DESCRIPTION_SIZE = 200;
 
-    @NotBlank
+    @NotNull(groups = UpdateInfo.class)
+    Long id;
+
+    @NotNull(groups = CreateInfo.class)
+    @Pattern(regexp = "^(?!\\s*$).+",
+            message = "Не должно быть пустой строкой",
+            groups = {CreateInfo.class, UpdateInfo.class})
     private String name;
 
-    @NotBlank
-    @Size(max = MAX_DESCRIPTION_SIZE, message = "Максимальная длина описания - 200 символов")
+    @Pattern(regexp = "^(?!\\s*$).+",
+            message = "Не должно быть пустой строкой",
+            groups = {CreateInfo.class, UpdateInfo.class})
+    @Size(max = MAX_DESCRIPTION_SIZE,
+            message = "Максимальная длина описания - 200 символов",
+            groups = {CreateInfo.class, UpdateInfo.class})
     private String description;
 
-    @NotNull
-    @Min(value = 1, message = "Продолжительность должна быть положительным числом")
+    @NotNull(groups = CreateInfo.class)
+    @Min(value = 1,
+            message = "Продолжительность должна быть положительным числом",
+            groups = {CreateInfo.class, UpdateInfo.class})
     private Integer duration;
 
-    @NotNull
     @Past
+    @NotNull(groups = CreateInfo.class)
     private LocalDate releaseDate;
 
-    @NotNull
+    @NotNull(groups = CreateInfo.class)
     private RatingDto mpa;
 
-    @NotNull
+    @NotNull(groups = CreateInfo.class)
     private Collection<GenreDto> genres = List.of();
 }

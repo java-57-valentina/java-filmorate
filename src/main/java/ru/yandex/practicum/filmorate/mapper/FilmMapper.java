@@ -2,7 +2,7 @@ package ru.yandex.practicum.filmorate.mapper;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-import ru.yandex.practicum.filmorate.dto.FilmCreateDto;
+import ru.yandex.practicum.filmorate.dto.FilmDto;
 import ru.yandex.practicum.filmorate.dto.FilmResponseDto;
 import ru.yandex.practicum.filmorate.dto.RatingDto;
 import ru.yandex.practicum.filmorate.model.Film;
@@ -17,7 +17,7 @@ public class FilmMapper {
     final RatingMapper ratingMapper;
     final GenreMapper genreMapper;
 
-    public Film mapToFilm(FilmCreateDto request, Rating ratingDto) {
+    public Film mapToFilm(FilmDto request, Rating ratingDto) {
         Film film = new Film();
         film.setName(request.getName());
         film.setDescription(request.getDescription());

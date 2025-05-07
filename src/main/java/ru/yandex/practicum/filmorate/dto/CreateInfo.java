@@ -1,4 +1,4 @@
 package ru.yandex.practicum.filmorate.dto;
 
-public class FilmCreateDto extends FilmDto  {
+public interface CreateInfo {
 }

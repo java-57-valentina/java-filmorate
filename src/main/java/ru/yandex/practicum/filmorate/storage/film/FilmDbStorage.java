@@ -52,7 +52,6 @@ public class FilmDbStorage extends BaseStorage<Film> implements FilmStorage {
             """;
 
     private static final String SQL_SELECT_POPULAR = """
-           
         SELECT f.*, r.name as mpa, COUNT(l.id) AS likes_count
         FROM films f
         LEFT JOIN ratings r ON r.id = f.rating_id

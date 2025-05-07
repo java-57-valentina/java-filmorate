@@ -1,13 +1,10 @@
 package ru.yandex.practicum.filmorate.controller;
 
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.dto.FilmCreateDto;
-import ru.yandex.practicum.filmorate.dto.FilmDto;
-import ru.yandex.practicum.filmorate.dto.FilmResponseDto;
-import ru.yandex.practicum.filmorate.dto.FilmUpdateDto;
+import ru.yandex.practicum.filmorate.dto.*;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.service.FilmService;
@@ -41,7 +38,7 @@ public class FilmController {
     }
 
     @PostMapping
-    public FilmResponseDto create(@Valid @RequestBody FilmCreateDto film) {
+    public FilmResponseDto create(@Validated(CreateInfo.class) @RequestBody FilmDto film) {
         validate(film);
         FilmResponseDto created = filmService.create(film);
         log.info("Film id:{} was added: {}", created.getId(), created);
@@ -49,7 +46,7 @@ public class FilmController {
     }
 
     @PutMapping
-    public FilmResponseDto update(@Valid @RequestBody FilmUpdateDto film) {
+    public FilmResponseDto update(@Validated(UpdateInfo.class) @RequestBody FilmDto film) {
         validate(film);
         FilmResponseDto updated = filmService.update(film);
         log.info("Film id:{} was updated: {}", updated.getId(), updated);
@@ -78,7 +75,10 @@ public class FilmController {
         return filmService.getTop(count);
     }
 
-    private void validate(@Valid FilmDto film) throws ValidationException {
+    private void validate(FilmDto film) throws ValidationException {
+        if (film.getReleaseDate() == null)
+            return;
+
         if (film.getReleaseDate().isBefore(FIRST_FILM_RELEASE_DATE))
             throw new ValidationException("The release date cannot be earlier "
                     + FIRST_FILM_RELEASE_DATE.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
