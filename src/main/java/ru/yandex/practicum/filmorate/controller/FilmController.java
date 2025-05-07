@@ -11,6 +11,7 @@ import ru.yandex.practicum.filmorate.dto.FilmUpdateDto;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.service.FilmService;
+import ru.yandex.practicum.filmorate.service.LikeService;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -23,8 +24,11 @@ import java.util.Collection;
 public class FilmController {
 
     private final FilmService filmService;
+    private final LikeService likeService;
+
     private static final LocalDate FIRST_FILM_RELEASE_DATE
             = LocalDate.of(1895, 12, 28);
+
 
     @GetMapping
     public Collection<FilmResponseDto> getAll() {
@@ -53,10 +57,10 @@ public class FilmController {
     }
 
     @PutMapping("/{id}/like/{userId}")
-    public Film like(@PathVariable Long id, @PathVariable Long userId) {
-        Film film = filmService.addLike(id, userId);
+    public FilmResponseDto like(@PathVariable Long id, @PathVariable Long userId) {
+        likeService.addLike(id, userId);
         log.info("User id:{} has liked film id:{}", userId, id);
-        return film;
+        return filmService.getFilm(id);
     }
 
     @DeleteMapping("/{id}/like/{userId}")
@@ -67,7 +71,7 @@ public class FilmController {
     }
 
     @GetMapping("/popular")
-    public Collection<Film> getTopFilms(
+    public Collection<FilmResponseDto> getTopFilms(
             @RequestParam(defaultValue = "10") int count) {
         if (count <= 0)
             throw new ValidationException("count > 0");

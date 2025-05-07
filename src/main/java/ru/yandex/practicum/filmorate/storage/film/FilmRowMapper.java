@@ -23,10 +23,11 @@ public class FilmRowMapper implements RowMapper<Film> {
         film.setName(rs.getString("title"));
         film.setDescription(rs.getString("description"));
         film.setDuration(rs.getInt("duration"));
-//        Rating mpa = new Mpa(
-//                rs.getInt("rating_id"),
-//                rs.getString("mpa"));
-        Rating rating = ratingRowMapper.mapRow(rs, rowNum);
+
+        Rating rating = new Rating(
+                rs.getShort("rating_id"),
+                rs.getString("mpa"));
+
         film.setMpa(rating);
         film.setReleaseDate(rs.getDate("release_date").toLocalDate());
         return film;

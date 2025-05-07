@@ -9,9 +9,8 @@ import ru.yandex.practicum.filmorate.dto.FilmUpdateDto;
 import ru.yandex.practicum.filmorate.mapper.FilmMapper;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Rating;
-import ru.yandex.practicum.filmorate.storage.genre.GenreStorage;
-import ru.yandex.practicum.filmorate.storage.rating.RatingStorage;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
+import ru.yandex.practicum.filmorate.storage.rating.RatingStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.util.Collection;
@@ -23,16 +22,7 @@ public class FilmService {
     private final UserStorage userStorage;
     private final FilmStorage filmStorage;
     private final RatingStorage ratingStorage;
-    private final GenreStorage genreStorage;
-
     private final FilmMapper filmMapper;
-
-    public Film addLike(Long id, Long userId) {
-        Film film = filmStorage.getFilm(id);
-        userStorage.getUser(userId);
-        film.addLike(userId);
-        return film;
-    }
 
     public Film removeLike(Long id, Long userId) {
         Film film = filmStorage.getFilm(id);
@@ -41,8 +31,10 @@ public class FilmService {
         return film;
     }
 
-    public Collection<Film> getTop(int count) {
-        return filmStorage.getTop(count);
+    public Collection<FilmResponseDto> getTop(int count) {
+        return filmStorage.getTop(count).stream()
+                .map(filmMapper::mapToFilmDto)
+                .collect(Collectors.toList());
     }
 
     public Collection<FilmResponseDto> getAll() {

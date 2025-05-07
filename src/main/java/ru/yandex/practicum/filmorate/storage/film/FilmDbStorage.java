@@ -2,21 +2,26 @@ package ru.yandex.practicum.filmorate.storage.film;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.stereotype.Repository;
+import ru.yandex.practicum.filmorate.dto.FilmResponseDto;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.storage.base.BaseStorage;
 import ru.yandex.practicum.filmorate.storage.genre.GenreStorage;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
 @Primary
 @Repository("filmDbStorage")
 public class FilmDbStorage extends BaseStorage<Film> implements FilmStorage {
-
     final GenreStorage genreStorage;
 
     private static final String SQL_SELECT_ALL = """
@@ -28,6 +33,8 @@ public class FilmDbStorage extends BaseStorage<Film> implements FilmStorage {
     private static final String SQL_SELECT_ONE =
             SQL_SELECT_ALL + " WHERE f.id = ?";
 
+    private static final String SQL_CHECK_FILM_EXISTS =
+            "SELECT COUNT(*) > 0 FROM films WHERE id = ?";
     private static final String SQL_INSERT = """
             INSERT INTO films (title, description, duration, release_date, rating_id)
             VALUES (?, ?, ?, ?, ?)
@@ -53,6 +60,13 @@ public class FilmDbStorage extends BaseStorage<Film> implements FilmStorage {
             WHERE film_id = ?
             """;
 
+    private static final String SQL_SELECT_POPULAR =
+        "SELECT f.*, COUNT(l.id) AS likes_count " +
+        "FROM films f LEFT JOIN likes l ON f.id = l.film_id " +
+        "GROUP BY f.id " +
+        "ORDER BY likes_count DESC " +
+        "LIMIT ?";
+
     @Autowired
     public FilmDbStorage(JdbcTemplate jdbcTemplate, FilmRowMapper rowMapper, GenreStorage genreStorage) {
         super(jdbcTemplate, rowMapper);
@@ -69,25 +83,26 @@ public class FilmDbStorage extends BaseStorage<Film> implements FilmStorage {
         Optional<Film> one = getOne(SQL_SELECT_ONE, id);
         Film film = one.orElseThrow(() -> new NotFoundException("Film id:" + id + " not found"));
 
-        List<Integer> all = jdbcTemplate.queryForList(
-                "SELECT film_id FROM film_genre",
-                Integer.class
-        );
-
         List<Short> genres = jdbcTemplate.queryForList(
                 GET_FILM_GENRES,
                 Short.class,
                 id
         );
-        System.out.println("genres = " + genres);
 
-        film.setGenres(List.copyOf(genres));
+        film.setGenres(genres);
         return film;
     }
 
     @Override
     public Collection<Film> getTop(int count) {
-        return null;
+        return getMany(SQL_SELECT_POPULAR, count);
+    }
+
+    @Override
+    public void checkFilmExists(Long id) {
+        boolean exists = exists(SQL_CHECK_FILM_EXISTS, id);
+        if (!exists)
+            throw  new NotFoundException("Film id:" + id + " not found");
     }
 
     @Override

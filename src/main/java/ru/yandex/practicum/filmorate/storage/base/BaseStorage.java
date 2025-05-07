@@ -18,6 +18,11 @@ public abstract class BaseStorage<T> {
     protected final JdbcTemplate jdbcTemplate;
     protected final RowMapper<T> rowMapper;
 
+    protected boolean exists(String sql, Object... args) {
+        Boolean b = jdbcTemplate.queryForObject(sql, Boolean.class, args);
+        return Boolean.TRUE.equals(b);
+    }
+
     protected Optional<T> getOne(String sql, Object... args) {
         try {
             T result = jdbcTemplate.queryForObject(sql, rowMapper, args);

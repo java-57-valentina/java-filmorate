@@ -54,6 +54,12 @@ public class InMemoryFilmStorage implements FilmStorage {
                 .collect(Collectors.toList());
     }
 
+    @Override
+    public void checkFilmExists(Long filmId) {
+        if (!films.containsKey(filmId))
+            throw new NotFoundException("Film id:" + filmId + " not found");
+    }
+
     private long getNextId() {
         long currentMaxId = films.keySet()
                 .stream()

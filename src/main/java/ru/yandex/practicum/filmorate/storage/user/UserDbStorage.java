@@ -98,10 +98,8 @@ public class UserDbStorage extends BaseStorage<User> implements UserStorage {
 
     @Override
     public void checkUserExists(Long id) throws NotFoundException {
-        Boolean found = jdbcTemplate.queryForObject(
-                SQL_CHECK_USER_EXISTS, Boolean.class, id);
-
-        if (found == null || !found)
+        boolean exists = exists(SQL_CHECK_USER_EXISTS, id);
+        if (!exists)
             throw new NotFoundException("User id:" + id + " not found");
     }
 
