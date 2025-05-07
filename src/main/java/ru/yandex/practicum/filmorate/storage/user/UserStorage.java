@@ -12,6 +12,8 @@ public interface UserStorage {
 
     User update(User user);
 
+    void checkUserExists(Long id) throws NotFoundException;
+
     User getUser(Long id) throws NotFoundException;
 
     void addFriend(Long id, Long friendId);

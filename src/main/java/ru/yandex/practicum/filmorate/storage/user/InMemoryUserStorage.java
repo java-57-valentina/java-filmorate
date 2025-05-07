@@ -21,6 +21,12 @@ public class InMemoryUserStorage implements UserStorage {
     }
 
     @Override
+    public void checkUserExists(Long id) throws NotFoundException {
+        if (!users.containsKey(id))
+            throw new NotFoundException("User id:" + id + " not found");
+    }
+
+    @Override
     public  User create(User user) {
         if (emails.contains(user.getEmail()))
             throw new EmailAlreadyTakenException(user.getEmail());
@@ -65,7 +71,7 @@ public class InMemoryUserStorage implements UserStorage {
     @Override
     public void addFriend(Long id, Long friendId) {
         User user = getUser(id);
-        User friend = getUser(friendId); // check exists
+        checkUserExists(friendId);
 
         if (!user.addFriend(friendId))
             throw new AlreadyFriendException(user.getId(), friendId);
@@ -73,11 +79,8 @@ public class InMemoryUserStorage implements UserStorage {
 
     @Override
     public void removeFriend(Long id, Long friendId) {
-        User user1 = getUser(id);
-        User user2 = getUser(friendId);
-
-        user1.removeFriend(friendId);
-        user2.removeFriend(id);
+        User user = getUser(id);
+        user.removeFriend(friendId);
     }
 
     @Override

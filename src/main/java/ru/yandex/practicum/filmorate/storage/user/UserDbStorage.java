@@ -55,6 +55,8 @@ public class UserDbStorage extends BaseStorage<User> implements UserStorage {
             DELETE FROM friendship
             WHERE user_id = ? AND friend_id = ?
             """;
+    private static final String SQL_CHECK_USER_EXISTS = "SELECT EXISTS(SELECT 1 FROM users WHERE id = ?)";
+
 
     public UserDbStorage(JdbcTemplate jdbcTemplate, UserRowMapper rowMapper) {
         super(jdbcTemplate, rowMapper);
@@ -95,6 +97,15 @@ public class UserDbStorage extends BaseStorage<User> implements UserStorage {
     }
 
     @Override
+    public void checkUserExists(Long id) throws NotFoundException {
+        Boolean found = jdbcTemplate.queryForObject(
+                SQL_CHECK_USER_EXISTS, Boolean.class, id);
+
+        if (found == null || !found)
+            throw new NotFoundException("User id:" + id + " not found");
+    }
+
+    @Override
     public User getUser(Long id) {
         Optional<User> one = getOne(SQL_SELECT_ONE, id);
         if (one.isEmpty())
@@ -104,8 +115,8 @@ public class UserDbStorage extends BaseStorage<User> implements UserStorage {
 
     @Override
     public void addFriend(Long id, Long friendId) {
-        getUser(id);        // check exists
-        getUser(friendId);  // check exists
+        checkUserExists(id);        // check exists
+        checkUserExists(friendId);  // check exists
 
         Boolean alreadyAdded = jdbcTemplate.queryForObject(
                 SQL_CHECK_FRIENDSHIP,
@@ -124,21 +135,21 @@ public class UserDbStorage extends BaseStorage<User> implements UserStorage {
 
     @Override
     public void removeFriend(Long id, Long friendId) {
-        getUser(id);        // check exists
-        getUser(friendId);  // check exists
+        checkUserExists(id);
+        checkUserExists(friendId);
         int updatedRows = update(SQL_REMOVE_FRIEND, id, friendId);
     }
 
     @Override
     public Collection<User> getFriendsOfUser(Long id) {
-        getUser(id); // check exists
+        checkUserExists(id);
         return getMany(SQL_SELECT_FRIENDS, id);
     }
 
     @Override
     public Collection<User> getCommonFriends(Long id, Long otherId) {
-        getUser(id);        // check exists
-        getUser(otherId);   // check exists
+        checkUserExists(id);
+        checkUserExists(otherId);
         return getMany(SQL_SELECT_COMMON_FRIENDS, id, otherId);
     }
 }
