@@ -36,7 +36,7 @@ public class UserService {
 
     public UserResponseDto create(UserCreateDto userCreateDto) {
         User userToCreate = userMapper.mapToUser(userCreateDto);
-        User created = userStorage.create(userToCreate);
+        User created = userStorage.save(userToCreate);
         if (created == null)
             throw new IllegalStateException("Failed to save data for new user");
         log.info("User was created: {}", created);

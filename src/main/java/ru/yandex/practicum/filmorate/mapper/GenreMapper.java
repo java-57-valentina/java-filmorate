@@ -7,13 +7,17 @@ import ru.yandex.practicum.filmorate.model.Genre;
 @Component
 public class GenreMapper {
 
-    public GenreDto mapToGenreDto(Short id) {
-        GenreDto genreDto = new GenreDto();
-        genreDto.setId(id);
-        return genreDto;
+    public GenreDto mapToGenreDto(Genre genre) {
+        GenreDto responceDto = new GenreDto();
+        responceDto.setName(genre.getName());
+        responceDto.setId(genre.getId());
+        return responceDto;
     }
 
-    public GenreDto mapToGenreDto(Genre genre) {
-        return mapToGenreDto(genre.getId());
+    public Genre mapToGenre(GenreDto genreDto) {
+        Genre genre = new Genre();
+        genre.setId(genreDto.getId());
+        genre.setName(genreDto.getName());
+        return genre;
     }
 }

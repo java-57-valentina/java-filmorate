@@ -27,7 +27,7 @@ public class InMemoryUserStorage implements UserStorage {
     }
 
     @Override
-    public  User create(User user) {
+    public  User save(User user) {
         if (emails.contains(user.getEmail()))
             throw new EmailAlreadyTakenException(user.getEmail());
 

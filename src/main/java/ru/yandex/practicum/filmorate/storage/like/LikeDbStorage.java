@@ -17,8 +17,8 @@ public class LikeDbStorage extends BaseStorage<Like> implements LikeStorage {
     private static final String SQL_ADD_LIKE = """
             INSERT INTO likes(film_id, user_id)
             VALUES(?, ?)
-    
             """;
+
     @Autowired
     public LikeDbStorage(JdbcTemplate jdbcTemplate, LikeRowMapper rowMapper) {
         super(jdbcTemplate, rowMapper);

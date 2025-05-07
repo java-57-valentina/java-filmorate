@@ -19,7 +19,7 @@ public class RatingService {
     private final RatingMapper ratingMapper;
 
     public Collection<RatingDto> getAll() {
-        return ratingStorage.findAll()
+        return ratingStorage.getAll()
                 .stream()
                 .map(ratingMapper::mapToDto)
                 .collect(Collectors.toList());

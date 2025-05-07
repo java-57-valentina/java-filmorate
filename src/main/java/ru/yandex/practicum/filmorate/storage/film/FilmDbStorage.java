@@ -2,22 +2,18 @@ package ru.yandex.practicum.filmorate.storage.film;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
-import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.stereotype.Repository;
-import ru.yandex.practicum.filmorate.dto.FilmResponseDto;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.storage.base.BaseStorage;
 import ru.yandex.practicum.filmorate.storage.genre.GenreStorage;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Primary
 @Repository("filmDbStorage")
@@ -54,18 +50,17 @@ public class FilmDbStorage extends BaseStorage<Film> implements FilmStorage {
             INSERT INTO film_genre(film_id, genre_id)
             VALUES (?, ?)
             """;
-    private static final String GET_FILM_GENRES = """
-            SELECT genre_id
-            FROM film_genre
-            WHERE film_id = ?
-            """;
 
-    private static final String SQL_SELECT_POPULAR =
-        "SELECT f.*, COUNT(l.id) AS likes_count " +
-        "FROM films f LEFT JOIN likes l ON f.id = l.film_id " +
-        "GROUP BY f.id " +
-        "ORDER BY likes_count DESC " +
-        "LIMIT ?";
+    private static final String SQL_SELECT_POPULAR = """
+           
+        SELECT f.*, r.name as mpa, COUNT(l.id) AS likes_count
+        FROM films f
+        LEFT JOIN ratings r ON r.id = f.rating_id
+        LEFT JOIN likes l ON f.id = l.film_id
+        GROUP BY f.id
+        ORDER BY likes_count DESC
+        LIMIT ?
+        """;
 
     @Autowired
     public FilmDbStorage(JdbcTemplate jdbcTemplate, FilmRowMapper rowMapper, GenreStorage genreStorage) {
@@ -83,19 +78,10 @@ public class FilmDbStorage extends BaseStorage<Film> implements FilmStorage {
         Optional<Film> one = getOne(SQL_SELECT_ONE, id);
         Film film = one.orElseThrow(() -> new NotFoundException("Film id:" + id + " not found"));
 
-        List<Short> genres = jdbcTemplate.queryForList(
-                GET_FILM_GENRES,
-                Short.class,
-                id
-        );
-
+        Collection<Genre> genres = genreStorage.getFilmGenres(id);
         film.setGenres(genres);
-        return film;
-    }
 
-    @Override
-    public Collection<Film> getTop(int count) {
-        return getMany(SQL_SELECT_POPULAR, count);
+        return film;
     }
 
     @Override
@@ -106,7 +92,7 @@ public class FilmDbStorage extends BaseStorage<Film> implements FilmStorage {
     }
 
     @Override
-    public Film create(Film film) {
+    public Film save(Film film) {
 
         Long id = insertAndReturnId(SQL_INSERT,
                 Long.class,
@@ -138,19 +124,26 @@ public class FilmDbStorage extends BaseStorage<Film> implements FilmStorage {
         return null;
     }
 
-    private void saveFilmGenres(Film film) {
-        final Collection<Short> genres = film.getGenres();
+    @Override
+    public Collection<Film> getTop(int count) {
+        return getMany(SQL_SELECT_POPULAR, count);
+    }
 
-        List<Short> invalidIds = genreStorage.checkAllExists(genres.stream().toList());
+    private void saveFilmGenres(Film film) {
+        final Collection<Genre> genres = film.getGenres();
+
+        Set<Short> genreIds = genres.stream().map(Genre::getId).collect(Collectors.toSet());
+        Collection<Short> invalidIds = genreStorage.checkAllExists(genreIds);
+
         if (!invalidIds.isEmpty())
             throw new NotFoundException("Genres are invalid: " + invalidIds);
 
         update(DELETE_FILM_GENRES, film.getId());
 
-        if (genres.isEmpty())
+        if (genreIds.isEmpty())
             return;
 
-        jdbcTemplate.batchUpdate(INSERT_FILM_GENRE, genres, genres.size(),
+        jdbcTemplate.batchUpdate(INSERT_FILM_GENRE, genreIds, genreIds.size(),
                 (ps, genreId) -> {
                     ps.setLong(1, film.getId());
                     ps.setInt(2, genreId);

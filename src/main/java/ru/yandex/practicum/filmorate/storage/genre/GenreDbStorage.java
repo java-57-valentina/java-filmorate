@@ -7,10 +7,7 @@ import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.storage.base.BaseStorage;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -18,28 +15,22 @@ import java.util.stream.Collectors;
 public class GenreDbStorage extends BaseStorage<Genre> implements GenreStorage {
 
     private static final String SQL_SELECT_ALL =  "SELECT * FROM genres ORDER BY id";
-    private static final String SQL_INSERT = "INSERT INTO genres (name) VALUES (?)";
     private static final String SQL_SELECT_ONE = "SELECT * FROM genres WHERE id = ?";
-    private static final String SQL_UPDATE = "UPDATE genres SET name = ? WHERE id = ?";
-    private static final String SQL_DELETE_ONE = "DELETE FROM genres WHERE id = ?";
+
+    private static final String SQL_GET_FILM_GENRES = """
+            SELECT fg.genre_id as id, g.name
+            FROM film_genre fg
+            LEFT JOIN genres g ON g.id = fg.genre_id
+            WHERE fg.film_id = ?
+            """;
 
     public GenreDbStorage(JdbcTemplate jdbcTemplate, GenreRowMapper rowMapper) {
         super(jdbcTemplate, rowMapper);
     }
 
     @Override
-    public Collection<Genre> findAll() {
+    public Collection<Genre> getAll() {
         return getMany(SQL_SELECT_ALL);
-    }
-
-    @Override
-    public Genre create(Genre genre) {
-        Short id = insertAndReturnId(SQL_INSERT,
-                Short.class,
-                genre.getName());
-
-        genre.setId(id);
-        return genre;
     }
 
     @Override
@@ -51,35 +42,24 @@ public class GenreDbStorage extends BaseStorage<Genre> implements GenreStorage {
     }
 
     @Override
-    public Genre update(Genre genre) {
-        int update = update(SQL_UPDATE, genre.getName(), genre.getId());
-        if (update > 0)
-            return genre;
-        return null;
-    }
-
-    @Override
-    public boolean delete(Short id) {
-        int update = update(SQL_DELETE_ONE, id);
-        return update > 0;
-    }
-
-    @Override
-    public List<Short> checkAllExists(List<Short> idsToCheck) {
-        if (idsToCheck.isEmpty()) {
+    public Collection<Short> checkAllExists(Set<Short> ids) {
+        if (ids.isEmpty()) {
             return Collections.emptyList();
         }
 
         String sql = "SELECT t.id FROM (VALUES " +
-                idsToCheck.stream()
+                ids.stream()
                         .map(id -> "(?)")
                         .collect(Collectors.joining(",")) +
                 ") AS t(id) WHERE t.id NOT IN (SELECT id FROM genres)";
 
-        List<Short> invalidIds = jdbcTemplate.queryForList(sql, Short.class, idsToCheck.toArray());
-
-
+        List<Short> invalidIds = jdbcTemplate.queryForList(sql, Short.class, ids.toArray());
         System.out.println("invalidIds = " + invalidIds);
         return invalidIds;
+    }
+
+    @Override
+    public Collection<Genre> getFilmGenres(Long id) {
+        return getMany(SQL_GET_FILM_GENRES, id);
     }
 }

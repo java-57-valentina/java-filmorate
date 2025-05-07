@@ -7,4 +7,7 @@ import lombok.Data;
 public class GenreDto {
     @NotNull
     Short id;
+
+    @NotNull
+    String name;
 }

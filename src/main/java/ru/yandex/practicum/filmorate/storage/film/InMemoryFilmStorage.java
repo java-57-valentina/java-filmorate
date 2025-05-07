@@ -30,7 +30,7 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     @Override
-    public Film create(Film film) {
+    public Film save(Film film) {
         final long id = getNextId();
         film.setId(id);
         film.clearLikes();

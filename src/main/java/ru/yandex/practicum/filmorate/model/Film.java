@@ -29,7 +29,7 @@ public class Film {
 
     private Rating mpa;
 
-    private Collection<Short> genres = List.of();
+    private Collection<Genre> genres = List.of();
 
     public void addLike(Long userId) {
         if (!likes.add(userId))

@@ -6,7 +6,7 @@ import java.util.Collection;
 
 public interface RatingStorage {
 
-    Collection<Rating> findAll();
+    Collection<Rating> getAll();
 
     Rating getRating(Short id);
 }

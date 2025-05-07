@@ -56,7 +56,7 @@ public class FilmService {
         Film film = filmMapper.mapToFilm(filmDto, rating);
 
         System.out.println("film = " + film);
-        Film created = filmStorage.create(film);
+        Film created = filmStorage.save(film);
         return filmMapper.mapToFilmDto(created);
     }
 

@@ -28,11 +28,4 @@ public class GenreController {
     public GenreDto getGenre(@PathVariable Short id) {
         return genreService.getGenre(id);
     }
-
-    @DeleteMapping("/{id}")
-    @ResponseStatus(HttpStatus.OK)
-    public void delete(@PathVariable Short id) {
-        genreService.delete(id);
-        log.info("Genre id:{} was deleted", id);
-    }
 }

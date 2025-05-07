@@ -26,7 +26,8 @@ public class FilmRowMapper implements RowMapper<Film> {
 
         Rating rating = new Rating(
                 rs.getShort("rating_id"),
-                rs.getString("mpa"));
+                rs.getString("mpa")
+        );
 
         film.setMpa(rating);
         film.setReleaseDate(rs.getDate("release_date").toLocalDate());
