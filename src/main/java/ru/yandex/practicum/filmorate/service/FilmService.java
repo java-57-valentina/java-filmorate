@@ -65,6 +65,9 @@ public class FilmService {
         if (film.getReleaseDate() != null)
             origin.setReleaseDate(film.getReleaseDate());
 
+        if (film.getMpa() != null)
+            origin.setMpa(mpaStorage.getMpa(film.getMpa().getId()));
+
         Film updated = filmStorage.update(origin);
         return filmMapper.mapToFilmDto(updated);
     }

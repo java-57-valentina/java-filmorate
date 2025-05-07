@@ -18,20 +18,22 @@ public class Film {
     public static final int MAX_DESCRIPTION_SIZE = 200;
 
     private Long id;
-
     private String name;
-
     private String description;
-
     private LocalDate releaseDate;
-
     private Integer duration;
-
-    private Set<Long> likes = new LinkedHashSet<>();
-
     private Mpa mpa;
 
+    private Set<Long> likes = new LinkedHashSet<>();
     private Collection<Genre> genres = List.of();
+
+    public Film(String name, String description, Integer duration, LocalDate releaseDate, Mpa mpa) {
+        this.name = name;
+        this.description = description;
+        this.duration = duration;
+        this.releaseDate = releaseDate;
+        this.mpa = mpa;
+    }
 
     public void addLike(Long userId) {
         if (!likes.add(userId))
