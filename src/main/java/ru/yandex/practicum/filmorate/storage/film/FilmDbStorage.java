@@ -52,14 +52,27 @@ public class FilmDbStorage extends BaseStorage<Film> implements FilmStorage {
             """;
 
     private static final String SQL_SELECT_POPULAR = """
-        SELECT f.*, m.name as mpa_name, COUNT(l.id) AS likes_count
-        FROM films f
-        LEFT JOIN mpa m ON m.id = f.mpa_id
-        LEFT JOIN likes l ON f.id = l.film_id
-        GROUP BY f.id
-        ORDER BY likes_count DESC
-        LIMIT ?
-        """;
+                SELECT
+                           f.id,
+                           f.title,
+                           f.description,
+                           f.duration,
+                           f.release_date,
+                           f.mpa_id,
+                           m.name AS mpa_name,
+                           COUNT(l.film_id) AS likes_count
+                       FROM
+                           films f
+                       LEFT JOIN
+                           mpa m ON m.id = f.mpa_id
+                       LEFT JOIN
+                           likes l ON f.id = l.film_id
+                       GROUP BY
+                           f.id, f.title, f.description, f.duration, f.release_date, f.mpa_id, m.name
+                       ORDER BY
+                           likes_count DESC
+                       LIMIT ?;
+            """;
 
     @Autowired
     public FilmDbStorage(JdbcTemplate jdbcTemplate, FilmRowMapper rowMapper, GenreStorage genreStorage) {
