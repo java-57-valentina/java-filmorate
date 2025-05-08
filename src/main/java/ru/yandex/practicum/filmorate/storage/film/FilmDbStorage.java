@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 @Primary
 @Repository("filmDbStorage")
 public class FilmDbStorage extends BaseStorage<Film> implements FilmStorage {
-    final GenreStorage genreStorage;
+    private final GenreStorage genreStorage;
 
     private static final String SQL_SELECT_ALL = """
             SELECT f.*, m.name as mpa_name

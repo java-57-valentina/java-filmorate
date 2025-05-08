@@ -14,17 +14,17 @@ import java.time.LocalDate;
 @AllArgsConstructor
 public class UserUpdateDto {
     @NotNull
-    Long id;
+    private Long id;
 
     @Email(message = "Неверный формат email")
-    String email;
+    private String email;
 
     @Pattern(regexp = "[^ ]*")
-    String login;
+    private String login;
 
-    String name;
+    private String name;
 
     @JsonFormat(pattern = "yyyy-MM-dd")
     @Past
-    LocalDate birthday;
+    private LocalDate birthday;
 }

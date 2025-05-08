@@ -11,16 +11,16 @@ public class UserCreateDto {
 
     @Email(message = "Неверный формат email")
     @NotBlank
-    String email;
+    private String email;
 
     @NotBlank
     @Pattern(regexp = "[^ ]*")
-    String login;
+    private String login;
 
-    String name;
+    private String name;
 
     @JsonFormat(pattern = "yyyy-MM-dd")
     @NotNull
     @Past
-    LocalDate birthday;
+    private LocalDate birthday;
 }

@@ -8,10 +8,10 @@ import ru.yandex.practicum.filmorate.model.Genre;
 public class GenreMapper {
 
     public GenreDto mapToGenreDto(Genre genre) {
-        GenreDto responceDto = new GenreDto();
-        responceDto.setName(genre.getName());
-        responceDto.setId(genre.getId());
-        return responceDto;
+        GenreDto responseDto = new GenreDto();
+        responseDto.setName(genre.getName());
+        responseDto.setId(genre.getId());
+        return responseDto;
     }
 
     public Genre mapToGenre(GenreDto genreDto) {

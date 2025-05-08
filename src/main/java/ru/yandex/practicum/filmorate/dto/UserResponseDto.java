@@ -8,9 +8,9 @@ import java.time.LocalDate;
 @Data
 @AllArgsConstructor
 public class UserResponseDto {
-    Long id;
-    String login;
-    String name;
-    String email;
-    LocalDate birthday;
+    private Long id;
+    private String login;
+    private String name;
+    private String email;
+    private LocalDate birthday;
 }

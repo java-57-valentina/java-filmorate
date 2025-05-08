@@ -14,8 +14,8 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class FilmMapper {
 
-    final MpaMapper mpaMapper;
-    final GenreMapper genreMapper;
+    private final MpaMapper mpaMapper;
+    private final GenreMapper genreMapper;
 
     public Film mapToFilm(FilmDto request, Mpa mpaDto) {
         Film film = new Film();

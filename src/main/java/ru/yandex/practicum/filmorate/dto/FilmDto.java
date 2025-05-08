@@ -12,7 +12,7 @@ public class FilmDto {
     public static final int MAX_DESCRIPTION_SIZE = 200;
 
     @NotNull(groups = UpdateInfo.class)
-    Long id;
+    private Long id;
 
     @NotNull(groups = CreateInfo.class)
     @Pattern(regexp = "^(?!\\s*$).+",

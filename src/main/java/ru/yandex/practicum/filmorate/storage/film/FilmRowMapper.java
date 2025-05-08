@@ -14,7 +14,7 @@ import java.sql.SQLException;
 @RequiredArgsConstructor
 public class FilmRowMapper implements RowMapper<Film> {
 
-    final MpaRowMapper mpaRowMapper;
+    private final MpaRowMapper mpaRowMapper;
 
     @Override
     public Film mapRow(ResultSet rs, int rowNum) throws SQLException {

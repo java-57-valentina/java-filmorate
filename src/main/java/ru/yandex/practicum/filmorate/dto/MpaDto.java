@@ -6,7 +6,7 @@ import lombok.Data;
 @Data
 public class MpaDto {
     @NotNull
-    Short id;
+    private Short id;
 
-    String name;
+    private String name;
 }
