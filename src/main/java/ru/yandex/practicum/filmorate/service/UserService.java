@@ -22,17 +22,16 @@ import java.util.stream.Collectors;
 public class UserService {
 
     private final UserStorage userStorage;
-    private final UserMapper userMapper;
 
     public Collection<UserResponseDto> getAll() {
         return userStorage.getAll().stream()
-                .map(userMapper::mapToUserDto)
+                .map(UserMapper::mapToUserDto)
                 .collect(Collectors.toList());
     }
 
     public UserResponseDto getUser(Long id) {
         User found = userStorage.getUser(id);
-        return userMapper.mapToUserDto(found);
+        return UserMapper.mapToUserDto(found);
     }
 
     public UserResponseDto create(UserCreateDto userCreateDto) {
@@ -40,12 +39,12 @@ public class UserService {
             throw new EmailAlreadyTakenException(userCreateDto.getEmail());
         }
 
-        User userToCreate = userMapper.mapToUser(userCreateDto);
+        User userToCreate = UserMapper.mapToUser(userCreateDto);
         User created = userStorage.save(userToCreate);
         if (created == null)
             throw new IllegalStateException("Failed to save data for new user");
         log.info("User was created: {}", created);
-        return userMapper.mapToUserDto(created);
+        return UserMapper.mapToUserDto(created);
     }
 
     public UserResponseDto update(UserUpdateDto user) {
@@ -71,7 +70,7 @@ public class UserService {
         if (updated == null)
             throw new IllegalStateException("Не удалось сохранить данные для пользователя");
 
-        return userMapper.mapToUserDto(updated);
+        return UserMapper.mapToUserDto(updated);
     }
 
     public void addFriend(Long id, Long friendId) {
@@ -94,14 +93,14 @@ public class UserService {
 
         Collection<User> commonFriends = userStorage.getCommonFriends(id, otherId);
         return commonFriends.stream()
-                .map(userMapper::mapToUserDto)
+                .map(UserMapper::mapToUserDto)
                 .collect(Collectors.toSet());
     }
 
     public Collection<UserResponseDto> getFriends(Long id) {
 
         Collection<UserResponseDto> friends = userStorage.getFriendsOfUser(id).stream()
-                .map(userMapper::mapToUserDto)
+                .map(UserMapper::mapToUserDto)
                 .toList();
         log.debug("User id:{} has {} friends", id, friends.size());
         return friends;

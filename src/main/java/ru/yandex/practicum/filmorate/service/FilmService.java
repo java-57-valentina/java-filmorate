@@ -19,34 +19,33 @@ import java.util.stream.Collectors;
 public class FilmService {
     private final FilmStorage filmStorage;
     private final MpaStorage mpaStorage;
-    private final FilmMapper filmMapper;
 
     public Collection<FilmResponseDto> getTop(int count) {
         return filmStorage.getTop(count).stream()
-                .map(filmMapper::mapToFilmDto)
+                .map(FilmMapper::mapToFilmDto)
                 .collect(Collectors.toList());
     }
 
     public Collection<FilmResponseDto> getAll() {
         return filmStorage.getAll().stream()
-                .map(filmMapper::mapToFilmDto)
+                .map(FilmMapper::mapToFilmDto)
                 .collect(Collectors.toList());
     }
 
     public FilmResponseDto getFilm(Long id) {
         Film film = filmStorage.getFilm(id);
-        return filmMapper.mapToFilmDto(film);
+        return FilmMapper.mapToFilmDto(film);
     }
 
     public FilmResponseDto create(FilmDto filmDto) {
         Mpa mpa = mpaStorage.getMpa(filmDto.getMpa().getId());
 
         System.out.println("filmDto = " + filmDto);
-        Film film = filmMapper.mapToFilm(filmDto, mpa);
+        Film film = FilmMapper.mapToFilm(filmDto, mpa);
 
         System.out.println("film = " + film);
         Film created = filmStorage.save(film);
-        return filmMapper.mapToFilmDto(created);
+        return FilmMapper.mapToFilmDto(created);
     }
 
     public FilmResponseDto update(FilmDto film) {
@@ -73,6 +72,6 @@ public class FilmService {
                     .collect(Collectors.toList()));
 
         Film updated = filmStorage.update(origin);
-        return filmMapper.mapToFilmDto(updated);
+        return FilmMapper.mapToFilmDto(updated);
     }
 }

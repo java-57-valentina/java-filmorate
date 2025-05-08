@@ -1,10 +1,10 @@
 package ru.yandex.practicum.filmorate.mapper;
 
-import org.springframework.stereotype.Component;
+import lombok.experimental.UtilityClass;
 import ru.yandex.practicum.filmorate.dto.MpaDto;
 import ru.yandex.practicum.filmorate.model.Mpa;
 
-@Component
+@UtilityClass
 public class MpaMapper {
     public MpaDto mapToDto(Mpa mpa) {
         MpaDto mpaDto = new MpaDto();

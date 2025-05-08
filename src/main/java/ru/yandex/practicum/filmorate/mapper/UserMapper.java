@@ -1,13 +1,11 @@
 package ru.yandex.practicum.filmorate.mapper;
 
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Component;
+import lombok.experimental.UtilityClass;
 import ru.yandex.practicum.filmorate.dto.UserCreateDto;
 import ru.yandex.practicum.filmorate.dto.UserResponseDto;
 import ru.yandex.practicum.filmorate.model.User;
 
-@Component
-@Slf4j
+@UtilityClass
 public class UserMapper {
     public User mapToUser(UserCreateDto request) {
         User user = new User();

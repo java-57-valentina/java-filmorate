@@ -14,17 +14,16 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class GenreService {
     private final GenreDbStorage genreStorage;
-    private final GenreMapper genreMapper;
 
     public Collection<GenreDto> getAll() {
         return genreStorage.getAll()
                 .stream()
-                .map(genreMapper::mapToGenreDto)
+                .map(GenreMapper::mapToGenreDto)
                 .collect(Collectors.toList());
     }
 
     public GenreDto getGenre(Short id) {
         Genre found = genreStorage.getGenre(id);
-        return genreMapper.mapToGenreDto(found);
+        return GenreMapper.mapToGenreDto(found);
     }
 }

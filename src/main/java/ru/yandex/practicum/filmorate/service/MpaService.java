@@ -16,17 +16,16 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class MpaService {
     private final MpaDbStorage mpaStorage;
-    private final MpaMapper mpaMapper;
 
     public Collection<MpaDto> getAll() {
         return mpaStorage.getAll()
                 .stream()
-                .map(mpaMapper::mapToDto)
+                .map(MpaMapper::mapToDto)
                 .collect(Collectors.toList());
     }
 
     public MpaDto getMpa(Short id) {
         Mpa found = mpaStorage.getMpa(id);
-        return mpaMapper.mapToDto(found);
+        return MpaMapper.mapToDto(found);
     }
 }
