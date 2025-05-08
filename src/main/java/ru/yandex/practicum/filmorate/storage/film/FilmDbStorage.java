@@ -21,13 +21,34 @@ public class FilmDbStorage extends BaseStorage<Film> implements FilmStorage {
     private final GenreStorage genreStorage;
 
     private static final String SQL_SELECT_ALL = """
-            SELECT f.*, m.name as mpa_name
+            SELECT
+                f.*,
+                m.name AS mpa_name,
+                (
+                    SELECT STRING_AGG(CONCAT(g.id, ':', g.name), '|' ORDER BY g.id)
+                    FROM film_genre fg
+                    JOIN genres g ON fg.genre_id = g.id
+                    WHERE fg.film_id = f.id
+                ) AS genres_data
             FROM films f
             LEFT JOIN mpa m ON m.id = f.mpa_id
+            ORDER BY f.id;
             """;
 
-    private static final String SQL_SELECT_ONE =
-            SQL_SELECT_ALL + " WHERE f.id = ?";
+    private static final String SQL_SELECT_ONE = """
+            SELECT
+                f.*,
+                m.name AS mpa_name,
+                (
+                    SELECT STRING_AGG(CONCAT(g.id, ':', g.name), '|' ORDER BY g.id)
+                    FROM film_genre fg
+                    JOIN genres g ON fg.genre_id = g.id
+                    WHERE fg.film_id = f.id
+                ) AS genres_data
+            FROM films f
+            LEFT JOIN mpa m ON m.id = f.mpa_id
+            WHERE f.id = ?
+            """;
 
     private static final String SQL_CHECK_FILM_EXISTS =
             "SELECT COUNT(*) > 0 FROM films WHERE id = ?";
@@ -52,26 +73,23 @@ public class FilmDbStorage extends BaseStorage<Film> implements FilmStorage {
             """;
 
     private static final String SQL_SELECT_POPULAR = """
-                SELECT
-                           f.id,
-                           f.title,
-                           f.description,
-                           f.duration,
-                           f.release_date,
-                           f.mpa_id,
-                           m.name AS mpa_name,
-                           COUNT(l.film_id) AS likes_count
-                       FROM
-                           films f
-                       LEFT JOIN
-                           mpa m ON m.id = f.mpa_id
-                       LEFT JOIN
-                           likes l ON f.id = l.film_id
-                       GROUP BY
-                           f.id, f.title, f.description, f.duration, f.release_date, f.mpa_id, m.name
-                       ORDER BY
-                           likes_count DESC
-                       LIMIT ?;
+            SELECT
+                f.*,
+                m.name AS mpa_name,
+                COUNT(l.film_id) as likes_count,
+                (
+                    SELECT STRING_AGG(CONCAT(g.id, ':', g.name), '|' ORDER BY g.id)
+                    FROM film_genre fg
+                    JOIN genres g ON fg.genre_id = g.id
+                    WHERE fg.film_id = f.id
+                ) AS genres_data
+            FROM films f
+            LEFT JOIN mpa m ON m.id = f.mpa_id
+            LEFT JOIN likes l ON f.id = l.film_id
+            GROUP BY
+               f.id, f.title, f.description, f.duration, f.release_date, f.mpa_id, m.name
+            ORDER BY likes_count DESC
+            LIMIT ?;
             """;
 
     @Autowired
@@ -82,7 +100,9 @@ public class FilmDbStorage extends BaseStorage<Film> implements FilmStorage {
 
     @Override
     public Collection<Film> getAll() {
-        return getMany(SQL_SELECT_ALL);
+        Collection<Film> many = getMany(SQL_SELECT_ALL);
+
+        return many;
     }
 
     @Override
