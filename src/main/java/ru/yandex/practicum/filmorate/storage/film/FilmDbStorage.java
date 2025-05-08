@@ -137,6 +137,9 @@ public class FilmDbStorage extends BaseStorage<Film> implements FilmStorage {
 
         film.setId(id);
         saveFilmGenres(film);
+        /* берем актуальный объект из базы, т.к. в получаемом объекте
+        * информация о жанрах/mpa может быть неполной (допускается
+        * наличие только их id, без названий) */
         return getFilm(id);
     }
 
@@ -151,6 +154,9 @@ public class FilmDbStorage extends BaseStorage<Film> implements FilmStorage {
                 film.getId());
 
         saveFilmGenres(film);
+        /* берем актуальный объект из базы, т.к. в получаемом объекте
+         * информация о жанрах/mpa может быть неполной (допускается
+         * наличие только их id, без названий) */
         return getFilm(film.getId());
     }
 
