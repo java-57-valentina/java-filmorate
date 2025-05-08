@@ -8,9 +8,9 @@ import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.storage.base.BaseStorage;
-import ru.yandex.practicum.filmorate.storage.genre.GenreStorage;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -18,8 +18,6 @@ import java.util.stream.Collectors;
 @Primary
 @Repository("filmDbStorage")
 public class FilmDbStorage extends BaseStorage<Film> implements FilmStorage {
-    private final GenreStorage genreStorage;
-
     private static final String SQL_SELECT_ALL = """
             SELECT
                 f.*,
@@ -93,27 +91,20 @@ public class FilmDbStorage extends BaseStorage<Film> implements FilmStorage {
             """;
 
     @Autowired
-    public FilmDbStorage(JdbcTemplate jdbcTemplate, FilmRowMapper rowMapper, GenreStorage genreStorage) {
+    public FilmDbStorage(JdbcTemplate jdbcTemplate, FilmRowMapper rowMapper) {
         super(jdbcTemplate, rowMapper);
-        this.genreStorage = genreStorage;
     }
 
     @Override
     public Collection<Film> getAll() {
         Collection<Film> many = getMany(SQL_SELECT_ALL);
-
         return many;
     }
 
     @Override
     public Film getFilm(Long id) {
         Optional<Film> one = getOne(SQL_SELECT_ONE, id);
-        Film film = one.orElseThrow(() -> new NotFoundException("Film id:" + id + " not found"));
-
-        Collection<Genre> genres = genreStorage.getFilmGenres(id);
-        film.setGenres(genres);
-
-        return film;
+        return one.orElseThrow(() -> new NotFoundException("Film id:" + id + " not found"));
     }
 
     @Override
@@ -130,7 +121,7 @@ public class FilmDbStorage extends BaseStorage<Film> implements FilmStorage {
                 .map(Genre::getId)
                 .collect(Collectors.toSet());
 
-        genreStorage.checkAllExists(genreIds);
+        checkGenresExist(genreIds);
 
         Long id = insertAndReturnId(SQL_INSERT,
                 Long.class,
@@ -146,8 +137,7 @@ public class FilmDbStorage extends BaseStorage<Film> implements FilmStorage {
 
         film.setId(id);
         saveFilmGenres(film);
-        film.setGenres(genreStorage.getFilmGenres(id));
-        return film;
+        return getFilm(id);
     }
 
     @Override
@@ -161,8 +151,7 @@ public class FilmDbStorage extends BaseStorage<Film> implements FilmStorage {
                 film.getId());
 
         saveFilmGenres(film);
-        film.setGenres(genreStorage.getFilmGenres(film.getId()));
-        return film;
+        return getFilm(film.getId());
     }
 
     @Override
@@ -187,5 +176,21 @@ public class FilmDbStorage extends BaseStorage<Film> implements FilmStorage {
                     ps.setLong(1, film.getId());
                     ps.setInt(2, genreId);
                 });
+    }
+
+    private void checkGenresExist(Set<Short> ids) throws NotFoundException {
+        if (ids.isEmpty()) {
+            return;
+        }
+
+        String sql = "SELECT t.id FROM (VALUES " +
+                ids.stream()
+                        .map(id -> "(?)")
+                        .collect(Collectors.joining(",")) +
+                ") AS t(id) WHERE t.id NOT IN (SELECT id FROM genres)";
+
+        List<Short> invalidIds = jdbcTemplate.queryForList(sql, Short.class, ids.toArray());
+        if (!invalidIds.isEmpty())
+            throw new NotFoundException("Genres are invalid: " + invalidIds);
     }
 }
