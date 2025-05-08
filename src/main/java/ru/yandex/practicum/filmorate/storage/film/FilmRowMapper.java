@@ -6,7 +6,6 @@ import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.Mpa;
-import ru.yandex.practicum.filmorate.storage.mpa.MpaRowMapper;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -18,8 +17,6 @@ import java.util.stream.Collectors;
 @Component
 @RequiredArgsConstructor
 public class FilmRowMapper implements RowMapper<Film> {
-
-    private final MpaRowMapper mpaRowMapper;
 
     @Override
     public Film mapRow(ResultSet rs, int rowNum) throws SQLException {
