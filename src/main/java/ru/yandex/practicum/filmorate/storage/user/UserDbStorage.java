@@ -1,6 +1,5 @@
 package ru.yandex.practicum.filmorate.storage.user;
 
-import org.springframework.context.annotation.Primary;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.exception.AlreadyFriendException;
@@ -11,7 +10,6 @@ import ru.yandex.practicum.filmorate.storage.base.BaseStorage;
 import java.util.Collection;
 import java.util.Optional;
 
-@Primary
 @Repository("userDbStorage")
 public class UserDbStorage extends BaseStorage<User> implements UserStorage {
 
