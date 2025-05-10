@@ -17,7 +17,6 @@ class FilmTest {
         film1.setDescription("text");
         film1.setReleaseDate(now);
         film1.setDuration(10);
-        film1.addLike(2L);
 
         Film film2 = new Film();
         film2.setId(1L);
@@ -25,7 +24,6 @@ class FilmTest {
         film2.setDescription("text");
         film2.setReleaseDate(now);
         film2.setDuration(10);
-        film2.addLike(2L);
 
         assertEquals(film1, film2);
     }

@@ -10,9 +10,11 @@ public interface FilmStorage {
 
     Film getFilm(Long id);
 
-    Film create(Film film);
+    Film save(Film film);
 
     Film update(Film film);
 
     Collection<Film> getTop(int count);
+
+    void checkFilmExists(Long filmId);
 }
