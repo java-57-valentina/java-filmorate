@@ -2,6 +2,7 @@
 
 ![Alt text](/documents/filmorate.png)
 
+
  ### Таблица genres
 Хранит названия жанров \
 __Поля__: id, название \
