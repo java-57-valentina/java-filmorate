@@ -1,18 +1,20 @@
 package ru.yandex.practicum.filmorate.storage.user;
 
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.exception.AlreadyFriendException;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.base.BaseStorage;
 
-import java.util.Collection;
-import java.util.Optional;
+import java.util.*;
 
+@Slf4j
 @Repository("userDbStorage")
 public class UserDbStorage extends BaseStorage<User> implements UserStorage {
-
     private static final String SQL_SELECT_ALL = "SELECT * FROM users";
     private static final String SQL_INSERT_USER = """
             INSERT INTO users (login, username, email, birthday)
@@ -54,13 +56,20 @@ public class UserDbStorage extends BaseStorage<User> implements UserStorage {
             DELETE FROM friendship
             WHERE user_id = ? AND friend_id = ?
             """;
+    private static final String SQL_GET_USERS_LIKES = """
+            SELECT l.*
+            FROM likes l
+            """;
     private static final String SQL_CHECK_USER_EXISTS = "SELECT EXISTS(SELECT 1 FROM users WHERE id = ?)";
     private static final String SQL_CHECK_EMAIL_USED = "SELECT EXISTS(SELECT 1 FROM users WHERE email = ?)";
 
+    private final ResultSetExtractor<Map<Long, Set<Long>>> usersLikesExtractor;
 
-
-    public UserDbStorage(JdbcTemplate jdbcTemplate, UserRowMapper rowMapper) {
+    @Autowired
+    public UserDbStorage(JdbcTemplate jdbcTemplate, UserRowMapper rowMapper,
+                         ResultSetExtractor<Map<Long, Set<Long>>> usersLikesExtractor) {
         super(jdbcTemplate, rowMapper);
+        this.usersLikesExtractor = usersLikesExtractor;
     }
 
     @Override
@@ -155,5 +164,53 @@ public class UserDbStorage extends BaseStorage<User> implements UserStorage {
         checkUserExists(id);
         checkUserExists(otherId);
         return getMany(SQL_SELECT_COMMON_FRIENDS, id, otherId);
+    }
+
+    @Override
+    public Set<Long> getRecommendationsIds(Long id) {
+        checkUserExists(id);
+        Map<Long, Set<Long>> usersLikes = jdbcTemplate.query(SQL_GET_USERS_LIKES, usersLikesExtractor);
+
+        // если у пользователя нет лайков, нет и рекомендаций
+        if (!usersLikes.containsKey(id)) {
+            log.info("Возвращается пустое множество рекомендаций");
+            return Set.of();
+        }
+
+        Map<Long, Long> commonLikesCount = new HashMap<>();
+        long currentCommonLikesCount;
+        long maxCommonLikesCount = 0;
+        Set<Long> recommendationsIds = new HashSet<>();
+
+        for (long userId : usersLikes.keySet()) {
+            if (userId == id) {
+                continue;
+            }
+            currentCommonLikesCount = 0;
+            for (long filmId : usersLikes.get(id)) {
+                if (usersLikes.get(userId).contains(filmId)) {
+                    currentCommonLikesCount++;
+                }
+            }
+            if (currentCommonLikesCount > maxCommonLikesCount) {
+                maxCommonLikesCount = currentCommonLikesCount;
+            }
+            log.debug("Максимальное число общих лайков = {}", maxCommonLikesCount);
+            log.debug("Текущее число общих лайков = {}", currentCommonLikesCount);
+            commonLikesCount.put(userId, currentCommonLikesCount);
+        }
+        // нет ни с кем ни одного общего лайка, то нет рекомендаций
+        if (maxCommonLikesCount == 0) {
+            log.info("Возвращается пустое множество рекомендаций");
+            return Set.of();
+        }
+        for (Map.Entry<Long, Long> e : commonLikesCount.entrySet()) {
+            if (e.getValue() == maxCommonLikesCount) {
+                recommendationsIds.addAll(usersLikes.get(e.getKey()));
+            }
+        }
+        recommendationsIds.removeAll(usersLikes.get(id));
+        log.info("Возвращается множество рекомендаций {}", recommendationsIds);
+        return recommendationsIds;
     }
 }
