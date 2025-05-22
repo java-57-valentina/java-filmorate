@@ -18,12 +18,12 @@ public class UsersLikesExtractor implements ResultSetExtractor<Map<Long, Set<Lon
         Map<Long, Set<Long>> usersLikes = new HashMap<>();
 
         while (rs.next()) {
-            long user_id = rs.getLong("user_id");
-            long film_id = rs.getLong("film_id");
-            if (!usersLikes.containsKey(user_id)) {
-                usersLikes.put(user_id, new HashSet<>());
+            long userId = rs.getLong("user_Id");
+            long filmId = rs.getLong("film_Id");
+            if (!usersLikes.containsKey(userId)) {
+                usersLikes.put(userId, new HashSet<>());
             }
-            usersLikes.get(user_id).add(film_id);
+            usersLikes.get(userId).add(filmId);
         }
         return usersLikes;
     }
