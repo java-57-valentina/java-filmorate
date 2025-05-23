@@ -24,9 +24,7 @@ public class ReviewMapper {
         responseDto.setFilmId(review.getFilmId());
         responseDto.setContent(review.getContent());
         responseDto.setIsPositive(review.isPositive());
-        responseDto.setLikes(review.getLikes());
-        responseDto.setDislikes(review.getDislikes());
-        responseDto.setUseful(review.getLikes() - review.getDislikes());
+        responseDto.setUseful(review.getUseful());
         return responseDto;
     }
 }

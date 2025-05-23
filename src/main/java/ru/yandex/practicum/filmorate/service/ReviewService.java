@@ -33,7 +33,7 @@ public class ReviewService {
     public Collection<ReviewResponseDto> getReviews(Long filmId, int count) {
         Collection<Review> reviews;
         if (filmId == null)
-            reviews = reviewStorage.getAll();
+            reviews = reviewStorage.getAll(count);
         else
             reviews = reviewStorage.getByFilm(filmId, count);
 
@@ -74,6 +74,7 @@ public class ReviewService {
     }
 
     public void addRateReview(Long reviewId, Long userId, boolean useful) {
+        userStorage.checkUserExists(userId);
         if (reviewStorage.isReviewRatedByUser(userId, reviewId)) {
             reviewStorage.updateRateReview(reviewId, userId, useful);
         } else {
@@ -81,9 +82,7 @@ public class ReviewService {
         }
     }
 
-    public void removeRateReview(Long reviewId, Long userId) {
-        if (reviewStorage.isReviewRatedByUser(userId, reviewId)) {
-             reviewStorage.deleteRateReview(reviewId, userId);
-        }
+    public void removeRateReview(Long reviewId, Long userId, boolean like) {
+        reviewStorage.deleteRateReview(reviewId, userId, like);
     }
 }

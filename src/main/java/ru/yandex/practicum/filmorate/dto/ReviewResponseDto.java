@@ -12,6 +12,4 @@ public class ReviewResponseDto {
     private String content;
     private Boolean isPositive;
     private int useful;
-    private int likes;
-    private int dislikes;
 }

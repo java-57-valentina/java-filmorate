@@ -6,7 +6,7 @@ import java.util.Collection;
 
 public interface ReviewStorage {
 
-    Collection<Review> getAll();
+    Collection<Review> getAll(int count);
 
     Collection<Review> getByFilm(Long filmId, int count);
 
@@ -24,7 +24,7 @@ public interface ReviewStorage {
 
     void addRateReview(Long id, Long userId, boolean useful);
 
-    boolean updateRateReview(Long reviewId, Long userId, boolean useful);
+    void updateRateReview(Long reviewId, Long userId, boolean useful);
 
-    void deleteRateReview(Long reviewId, Long userId);
+    boolean deleteRateReview(Long reviewId, Long userId, boolean useful);
 }

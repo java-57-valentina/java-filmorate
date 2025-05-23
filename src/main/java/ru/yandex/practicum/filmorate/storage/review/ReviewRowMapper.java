@@ -20,8 +20,7 @@ public class ReviewRowMapper implements RowMapper<Review>  {
         review.setPositive(rs.getBoolean("is_positive"));
         review.setUserId(rs.getLong("user_id"));
         review.setFilmId(rs.getLong("film_id"));
-        review.setLikes(rs.getInt("likes"));
-        review.setDislikes(rs.getInt("dislikes"));
+        review.setUseful(rs.getInt("useful"));
         Timestamp createdAt = rs.getTimestamp("created_at");
         review.setCreatedAt(createdAt.toLocalDateTime());
         return review;

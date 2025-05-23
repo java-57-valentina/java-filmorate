@@ -68,13 +68,13 @@ public class ReviewController {
 
     @DeleteMapping("/{id}/like/{userId}")
     public void removeLike(@PathVariable Long id, @PathVariable Long userId) {
-        reviewService.removeRateReview(id, userId);
+        reviewService.removeRateReview(id, userId, true);
         log.info("User id:{} has removed his like/dislike from review id:{}", userId, id);
     }
 
     @DeleteMapping("/{id}/dislike/{userId}")
     public void removeDislike(@PathVariable Long id, @PathVariable Long userId) {
-        reviewService.removeRateReview(id, userId);
+        reviewService.removeRateReview(id, userId, false);
         log.info("User id:{} has removed his like/dislike from review id:{}", userId, id);
     }
 }

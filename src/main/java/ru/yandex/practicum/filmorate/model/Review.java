@@ -16,6 +16,5 @@ public class Review {
     private Long filmId;
     private boolean isPositive;
     private LocalDateTime createdAt;
-    private int likes = 0;
-    private int dislikes = 0;
+    private int useful = 0;
 }

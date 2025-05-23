@@ -19,25 +19,28 @@ public class ReviewDbStorage extends BaseStorage<Review> implements ReviewStorag
     private static final String SQL_SELECT_ALL = """
             SELECT
                 r.*,
-                    (SELECT COUNT(*) FROM rate_review WHERE review_id = r.id AND is_useful = true) AS likes,
-                    (SELECT COUNT(*) FROM rate_review WHERE review_id = r.id AND is_useful = false) AS dislikes
+                    (SELECT COUNT(*) FROM rate_review WHERE review_id = r.id AND is_useful = true) -
+                    (SELECT COUNT(*) FROM rate_review WHERE review_id = r.id AND is_useful = false) AS useful
             FROM reviews r
+            ORDER BY useful DESC
+            LIMIT ?;
             """;
 
     private static final String SQL_SELECT_BY_FILM = """
             SELECT r.*,
-                    (SELECT COUNT(*) FROM rate_review WHERE review_id = r.id AND is_useful = true) AS likes,
-                    (SELECT COUNT(*) FROM rate_review WHERE review_id = r.id AND is_useful = false) AS dislikes
+                    (SELECT COUNT(*) FROM rate_review WHERE review_id = r.id AND is_useful = true) -
+                    (SELECT COUNT(*) FROM rate_review WHERE review_id = r.id AND is_useful = false) AS useful
             FROM reviews r
             WHERE r.film_id = ?
+            ORDER BY useful DESC
             LIMIT ?;
             """;
 
     private static final String SQL_SELECT_ONE = """
             SELECT
                 r.*,
-                    (SELECT COUNT(*) FROM rate_review WHERE review_id = r.id AND is_useful = true) AS likes,
-                    (SELECT COUNT(*) FROM rate_review WHERE review_id = r.id AND is_useful = false) AS dislikes
+                    (SELECT COUNT(*) FROM rate_review WHERE review_id = r.id AND is_useful = true) -
+                    (SELECT COUNT(*) FROM rate_review WHERE review_id = r.id AND is_useful = false) AS useful
             FROM reviews r
             WHERE r.id = ?
             """;
@@ -78,7 +81,7 @@ public class ReviewDbStorage extends BaseStorage<Review> implements ReviewStorag
 
     private static final String SQL_DELETE_RATE_REVIEW = """
             DELETE FROM rate_review
-            WHERE user_id = ? AND review_id = ?;
+            WHERE user_id = ? AND review_id = ? AND is_useful = ?;
             """;
 
     @Autowired
@@ -91,8 +94,8 @@ public class ReviewDbStorage extends BaseStorage<Review> implements ReviewStorag
     }
 
     @Override
-    public Collection<Review> getAll() {
-        return super.getMany(SQL_SELECT_ALL);
+    public Collection<Review> getAll(int count) {
+        return super.getMany(SQL_SELECT_ALL, count);
     }
 
     @Override
@@ -155,13 +158,16 @@ public class ReviewDbStorage extends BaseStorage<Review> implements ReviewStorag
     }
 
     @Override
-    public void deleteRateReview(Long reviewId, Long userId) {
-        update(SQL_DELETE_RATE_REVIEW, userId, reviewId);
+    public boolean deleteRateReview(Long reviewId, Long userId, boolean useful) {
+        int updated = update(SQL_DELETE_RATE_REVIEW, userId, reviewId, useful);
+        return updated == 1;
     }
 
+
+
     @Override
-    public boolean updateRateReview(Long reviewId, Long userId, boolean useful) {
+    public void updateRateReview(Long reviewId, Long userId, boolean useful) {
         int updated = update(SQL_UPDATE_RATE_REVIEW, useful, userId, reviewId);
-        return updated == 1;
+
     }
 }
