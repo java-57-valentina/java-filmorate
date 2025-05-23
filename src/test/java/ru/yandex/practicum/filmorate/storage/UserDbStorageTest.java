@@ -7,6 +7,7 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
+import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.user.UserDbStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserRowMapper;
@@ -14,6 +15,7 @@ import ru.yandex.practicum.filmorate.storage.user.UserRowMapper;
 import java.time.LocalDate;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @JdbcTest
@@ -44,6 +46,17 @@ public class UserDbStorageTest {
         Assertions.assertEquals(user.getLogin(), found.getLogin());
         Assertions.assertEquals(user.getEmail(), found.getEmail());
         Assertions.assertEquals(user.getBirthday(), found.getBirthday());
+    }
+
+    @Test
+    void delete() {
+        User created = storage.save(user);
+        storage.deleteUser(created.getId());
+        String message = "User id:" + created.getId() + " not found";
+
+        assertThatThrownBy(() -> storage.checkUserExists(created.getId()))
+                .isInstanceOf(NotFoundException.class)
+                .hasMessageContaining(message);
     }
 
     @Test

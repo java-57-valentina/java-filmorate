@@ -74,4 +74,8 @@ public class FilmService {
         Film updated = filmStorage.update(origin);
         return FilmMapper.mapToFilmDto(updated);
     }
+
+    public void delete(Long id) {
+        filmStorage.deleteFilm(id);
+    }
 }

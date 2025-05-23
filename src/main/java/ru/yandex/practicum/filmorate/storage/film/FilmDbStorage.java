@@ -88,6 +88,8 @@ public class FilmDbStorage extends BaseStorage<Film> implements FilmStorage {
             LIMIT ?;
             """;
 
+    private static final String SQL_DELETE_FILM = "DELETE FROM films WHERE id = ?";
+
     @Autowired
     public FilmDbStorage(JdbcTemplate jdbcTemplate, FilmRowMapper rowMapper) {
         super(jdbcTemplate, rowMapper);
@@ -110,6 +112,11 @@ public class FilmDbStorage extends BaseStorage<Film> implements FilmStorage {
         boolean exists = exists(SQL_CHECK_FILM_EXISTS, id);
         if (!exists)
             throw  new NotFoundException("Film id:" + id + " not found");
+    }
+
+    @Override
+    public void deleteFilm(Long id) {
+        update(SQL_DELETE_FILM, id);
     }
 
     @Override
