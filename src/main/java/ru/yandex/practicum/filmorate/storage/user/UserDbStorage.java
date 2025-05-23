@@ -1,6 +1,5 @@
 package ru.yandex.practicum.filmorate.storage.user;
 
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.ResultSetExtractor;
@@ -12,7 +11,6 @@ import ru.yandex.practicum.filmorate.storage.base.BaseStorage;
 
 import java.util.*;
 
-@Slf4j
 @Repository("userDbStorage")
 public class UserDbStorage extends BaseStorage<User> implements UserStorage {
     private static final String SQL_SELECT_ALL = "SELECT * FROM users";
@@ -173,44 +171,35 @@ public class UserDbStorage extends BaseStorage<User> implements UserStorage {
 
         // если у пользователя нет лайков, нет и рекомендаций
         if (!usersLikes.containsKey(id)) {
-            log.info("Возвращается пустое множество рекомендаций");
             return Set.of();
         }
 
-        Map<Long, Long> commonLikesCount = new HashMap<>();
+        Set<Long> currentUserLikes = usersLikes.get(id);
+        Set<Long> recommendationsIds = new HashSet<>();
         long currentCommonLikesCount;
         long maxCommonLikesCount = 0;
-        Set<Long> recommendationsIds = new HashSet<>();
 
         for (long userId : usersLikes.keySet()) {
             if (userId == id) {
                 continue;
             }
-            currentCommonLikesCount = 0;
-            for (long filmId : usersLikes.get(id)) {
-                if (usersLikes.get(userId).contains(filmId)) {
-                    currentCommonLikesCount++;
-                }
+            Set<Long> otherUserLikes = new HashSet<>(usersLikes.get(userId));
+            otherUserLikes.retainAll(currentUserLikes);
+            currentCommonLikesCount = otherUserLikes.size();
+            if (currentCommonLikesCount < maxCommonLikesCount) {
+                continue;
             }
             if (currentCommonLikesCount > maxCommonLikesCount) {
                 maxCommonLikesCount = currentCommonLikesCount;
+                recommendationsIds.clear();
             }
-            log.debug("Максимальное число общих лайков = {}", maxCommonLikesCount);
-            log.debug("Текущее число общих лайков = {}", currentCommonLikesCount);
-            commonLikesCount.put(userId, currentCommonLikesCount);
+            recommendationsIds.addAll(usersLikes.get(userId));
         }
         // нет ни с кем ни одного общего лайка, то нет рекомендаций
         if (maxCommonLikesCount == 0) {
-            log.info("Возвращается пустое множество рекомендаций");
             return Set.of();
         }
-        for (Map.Entry<Long, Long> e : commonLikesCount.entrySet()) {
-            if (e.getValue() == maxCommonLikesCount) {
-                recommendationsIds.addAll(usersLikes.get(e.getKey()));
-            }
-        }
         recommendationsIds.removeAll(usersLikes.get(id));
-        log.info("Возвращается множество рекомендаций {}", recommendationsIds);
         return recommendationsIds;
     }
 }

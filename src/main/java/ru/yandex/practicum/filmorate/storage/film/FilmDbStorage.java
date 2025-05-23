@@ -8,10 +8,7 @@ import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.storage.base.BaseStorage;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Repository("filmDbStorage")
@@ -44,6 +41,21 @@ public class FilmDbStorage extends BaseStorage<Film> implements FilmStorage {
             FROM films f
             LEFT JOIN mpa m ON m.id = f.mpa_id
             WHERE f.id = ?
+            """;
+
+    private static final String SQL_SELECT_SET = """
+            SELECT
+                f.*,
+                m.name AS mpa_name,
+                (
+                    SELECT STRING_AGG(CONCAT(g.id, ':', g.name), '|' ORDER BY g.id)
+                    FROM film_genre fg
+                    JOIN genres g ON fg.genre_id = g.id
+                    WHERE fg.film_id = f.id
+                ) AS genres_data
+            FROM films f
+            LEFT JOIN mpa m ON m.id = f.mpa_id
+            WHERE f.id IN (%s)
             """;
 
     private static final String SQL_CHECK_FILM_EXISTS =
@@ -103,6 +115,13 @@ public class FilmDbStorage extends BaseStorage<Film> implements FilmStorage {
     public Film getFilm(Long id) {
         Optional<Film> one = getOne(SQL_SELECT_ONE, id);
         return one.orElseThrow(() -> new NotFoundException("Film id:" + id + " not found"));
+    }
+
+    @Override
+    public Collection<Film> getFilmSet(Set<Long> ids) {
+        String sqlParams = String.join(",", Collections.nCopies(ids.size(), "?"));
+
+        return super.getMany(String.format(SQL_SELECT_SET, sqlParams), ids.toArray());
     }
 
     @Override

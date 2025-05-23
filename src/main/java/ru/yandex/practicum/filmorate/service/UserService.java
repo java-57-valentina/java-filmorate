@@ -109,8 +109,9 @@ public class UserService {
 
     public Collection<FilmResponseDto> getRecommendations(Long id) {
         Set<Long> filmIds = userStorage.getRecommendationsIds(id);
-        return filmIds.stream()
-                .map(filmStorage::getFilm)
+        log.debug("Recommendations Ids for user {}: {}", id, filmIds);
+        return filmStorage.getFilmSet(filmIds)
+                .stream()
                 .map(FilmMapper::mapToFilmDto)
                 .toList();
     }
