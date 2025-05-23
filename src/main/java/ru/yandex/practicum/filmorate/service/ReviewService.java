@@ -76,8 +76,7 @@ public class ReviewService {
     public void addRateReview(Long reviewId, Long userId, boolean useful) {
         if (reviewStorage.isReviewRatedByUser(userId, reviewId)) {
             reviewStorage.updateRateReview(reviewId, userId, useful);
-        }
-        else {
+        } else {
             reviewStorage.addRateReview(reviewId, userId, useful);
         }
     }
