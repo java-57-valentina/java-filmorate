@@ -9,6 +9,8 @@ import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.Mpa;
+import ru.yandex.practicum.filmorate.storage.director.DirectorDbStorage;
+import ru.yandex.practicum.filmorate.storage.director.DirectorRowMapper;
 import ru.yandex.practicum.filmorate.storage.film.FilmDbStorage;
 import ru.yandex.practicum.filmorate.storage.film.FilmRowMapper;
 import ru.yandex.practicum.filmorate.storage.genre.GenreDbStorage;
@@ -25,13 +27,13 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @JdbcTest
 @AutoConfigureTestDatabase
-@Import({ FilmDbStorage.class, GenreDbStorage.class, FilmRowMapper.class, GenreRowMapper.class, MpaRowMapper.class})
+@Import({FilmDbStorage.class, GenreDbStorage.class, FilmRowMapper.class, GenreRowMapper.class, MpaRowMapper.class, DirectorDbStorage.class, DirectorRowMapper.class})
 public class FilmDbStorageTest {
 
     @Autowired
     private FilmDbStorage storage;
-     private static final Film film1 = new Film("Film1 Name", "Boring film", 120, LocalDate.of(1991, 1, 1), new Mpa((short) 1, "f"));
-     private static final Film film2 = new Film("Film2 Name", "Interesting film", 120, LocalDate.of(1991, 1, 1), new Mpa((short) 1,"2"));
+    private static final Film film1 = new Film("Film1 Name", "Boring film", 120, LocalDate.of(1991, 1, 1), new Mpa((short) 1, "f"));
+    private static final Film film2 = new Film("Film2 Name", "Interesting film", 120, LocalDate.of(1991, 1, 1), new Mpa((short) 1, "2"));
 
 
     @Test
@@ -48,7 +50,7 @@ public class FilmDbStorageTest {
         created.setName("new name");
         created.setDescription("new desc");
         created.setDuration(20);
-        created.setReleaseDate(LocalDate.of(2020,2,2));
+        created.setReleaseDate(LocalDate.of(2020, 2, 2));
         created.setMpa(new Mpa((short) 2, "PG"));
         created.setGenres(List.of(
                 new Genre((short) 2, "x"),
@@ -65,7 +67,7 @@ public class FilmDbStorageTest {
         assertThat(found.getName()).isEqualTo("new name");
         assertThat(found.getDescription()).isEqualTo("new desc");
         assertThat(found.getReleaseDate()).isEqualTo(created.getReleaseDate());
-        assertThat(found.getMpa()).extracting(Mpa::getId).isEqualTo((short)2);
+        assertThat(found.getMpa()).extracting(Mpa::getId).isEqualTo((short) 2);
         assertThat(found.getGenres()).extracting(Genre::getId).contains((short) 2);
         assertThat(found.getGenres()).extracting(Genre::getId).contains((short) 3);
     }

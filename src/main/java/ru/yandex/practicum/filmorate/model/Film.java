@@ -20,6 +20,7 @@ public class Film {
     private Mpa mpa;
 
     private Collection<Genre> genres = List.of();
+    private Collection<Director> directors = List.of();
 
     public Film(String name, String description, Integer duration, LocalDate releaseDate, Mpa mpa) {
         this.name = name;

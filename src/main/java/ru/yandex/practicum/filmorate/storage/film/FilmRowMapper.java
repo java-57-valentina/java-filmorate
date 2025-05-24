@@ -3,6 +3,7 @@ package ru.yandex.practicum.filmorate.storage.film;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
+import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.Mpa;
@@ -38,6 +39,10 @@ public class FilmRowMapper implements RowMapper<Film> {
         Collection<Genre> genres = parseGenres(genresData);
         film.setGenres(genres);
 
+        String directorsData = rs.getString("directors_data");
+        Collection<Director> directors = parseDirectors(directorsData);
+        film.setDirectors(directors);
+
         return film;
     }
 
@@ -53,6 +58,20 @@ public class FilmRowMapper implements RowMapper<Film> {
                 .map(info -> info.split(":"))
                 .filter(parts -> parts.length == 2)
                 .map(parts -> new Genre(Short.parseShort(parts[0]), parts[1]))
+                .collect(Collectors.toList());
+    }
+
+    // сделать один параметризованный метод
+    private Collection<Director> parseDirectors(String directorsData) {
+        if (directorsData == null || directorsData.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        String[] directorsInfo = directorsData.split("\\|");
+        return Arrays.stream(directorsInfo)
+                .map(info -> info.split(":"))
+                .filter(parts -> parts.length == 2)
+                .map(parts -> new Director(Integer.parseInt(parts[0]), parts[1]))
                 .collect(Collectors.toList());
     }
 }

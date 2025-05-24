@@ -21,5 +21,7 @@ public interface FilmStorage {
 
     void checkFilmExists(Long filmId);
 
+    public Collection<Film> getSortedFilmsByDirector(Integer directorId, String sortBy);
+
     void deleteFilm(Long id);
 }

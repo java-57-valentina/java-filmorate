@@ -1,6 +1,7 @@
 package ru.yandex.practicum.filmorate.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.dto.FilmDto;
 import ru.yandex.practicum.filmorate.dto.FilmResponseDto;
@@ -8,6 +9,7 @@ import ru.yandex.practicum.filmorate.mapper.FilmMapper;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.Mpa;
+import ru.yandex.practicum.filmorate.storage.director.DirectorDbStorage;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.mpa.MpaStorage;
 
@@ -16,9 +18,11 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class FilmService {
     private final FilmStorage filmStorage;
     private final MpaStorage mpaStorage;
+    private final DirectorDbStorage directorStorage;
 
     public Collection<FilmResponseDto> getTop(int count) {
         return filmStorage.getTop(count).stream()
@@ -71,8 +75,19 @@ public class FilmService {
                     .map(genreDto -> new Genre(genreDto.getId(), genreDto.getName()))
                     .collect(Collectors.toList()));
 
+        if (film.getDirectors() != null) origin.setDirectors(film.getDirectors().stream()
+                .map(directorDto -> directorStorage.getDirector(directorDto.getId()))
+                .collect(Collectors.toSet()));
+
         Film updated = filmStorage.update(origin);
+        log.info("Film with id: {} updated: {}", updated.getId(), updated);
         return FilmMapper.mapToFilmDto(updated);
+    }
+
+    public Collection<FilmResponseDto> getSortedFilmsByDirector(Integer directorId, String sortBy) {
+        return filmStorage.getSortedFilmsByDirector(directorId, sortBy).stream()
+                .map(FilmMapper::mapToFilmDto)
+                .collect(Collectors.toList());
     }
 
     public void delete(Long id) {

@@ -11,6 +11,8 @@ import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Mpa;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.storage.director.DirectorDbStorage;
+import ru.yandex.practicum.filmorate.storage.director.DirectorRowMapper;
 import ru.yandex.practicum.filmorate.storage.film.FilmDbStorage;
 import ru.yandex.practicum.filmorate.storage.film.FilmRowMapper;
 import ru.yandex.practicum.filmorate.storage.like.LikeDbStorage;
@@ -31,7 +33,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 @AutoConfigureTestDatabase
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 @Import({UserDbStorage.class, UserRowMapper.class, UsersLikesExtractor.class,
-LikeDbStorage.class, FilmDbStorage.class, FilmRowMapper.class})
+        LikeDbStorage.class, FilmDbStorage.class, FilmRowMapper.class, DirectorDbStorage.class, DirectorRowMapper.class})
 public class UserDbStorageTest {
 
     private final UserDbStorage storage;
@@ -111,15 +113,15 @@ public class UserDbStorageTest {
         long user3Id = storage.save(user3).getId();
 
         Film film1 = new Film("Film1", "", 100,
-                LocalDate.of(2000, 1, 1), new Mpa((short) 1,""));
+                LocalDate.of(2000, 1, 1), new Mpa((short) 1, ""));
         Film film2 = new Film("Film2", "", 100,
-                LocalDate.of(2000, 1, 1), new Mpa((short) 1,""));
+                LocalDate.of(2000, 1, 1), new Mpa((short) 1, ""));
         Film film3 = new Film("Film3", "", 100,
-                LocalDate.of(2000, 1, 1), new Mpa((short) 1,""));
+                LocalDate.of(2000, 1, 1), new Mpa((short) 1, ""));
         Film film4 = new Film("Film4", "", 100,
-                LocalDate.of(2000, 1, 1), new Mpa((short) 1,""));
+                LocalDate.of(2000, 1, 1), new Mpa((short) 1, ""));
         Film film5 = new Film("Film5", "", 100,
-                LocalDate.of(2000, 1, 1), new Mpa((short) 1,""));
+                LocalDate.of(2000, 1, 1), new Mpa((short) 1, ""));
 
         long film1Id = filmDbStorage.save(film1).getId();
         long film2Id = filmDbStorage.save(film2).getId();
