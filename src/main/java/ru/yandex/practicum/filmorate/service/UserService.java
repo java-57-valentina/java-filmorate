@@ -107,6 +107,7 @@ public class UserService {
         return friends;
     }
 
+
     public Collection<FilmResponseDto> getRecommendations(Long id) {
         Set<Long> filmIds = userStorage.getRecommendationsIds(id);
         log.debug("Recommendations Ids for user {}: {}", id, filmIds);
@@ -114,5 +115,9 @@ public class UserService {
                 .stream()
                 .map(FilmMapper::mapToFilmDto)
                 .toList();
+    }
+  
+    public void delete(Long id) {
+        userStorage.deleteUser(id);
     }
 }

@@ -20,4 +20,6 @@ public interface FilmStorage {
     Collection<Film> getTop(int count);
 
     void checkFilmExists(Long filmId);
+
+    void deleteFilm(Long id);
 }

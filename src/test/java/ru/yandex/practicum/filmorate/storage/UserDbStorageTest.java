@@ -22,7 +22,10 @@ import java.time.LocalDate;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+
 
 @JdbcTest
 @AutoConfigureTestDatabase
@@ -55,6 +58,17 @@ public class UserDbStorageTest {
         Assertions.assertEquals(user.getLogin(), found.getLogin());
         Assertions.assertEquals(user.getEmail(), found.getEmail());
         Assertions.assertEquals(user.getBirthday(), found.getBirthday());
+    }
+
+    @Test
+    void delete() {
+        User created = storage.save(user);
+        storage.deleteUser(created.getId());
+        String message = "User id:" + created.getId() + " not found";
+
+        assertThatThrownBy(() -> storage.checkUserExists(created.getId()))
+                .isInstanceOf(NotFoundException.class)
+                .hasMessageContaining(message);
     }
 
     @Test

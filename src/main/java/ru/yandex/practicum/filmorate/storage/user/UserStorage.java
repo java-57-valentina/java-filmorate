@@ -28,4 +28,6 @@ public interface UserStorage {
     boolean isEmailUsed(String email);
 
     Set<Long> getRecommendationsIds(Long id);
+
+    void deleteUser(Long id);
 }

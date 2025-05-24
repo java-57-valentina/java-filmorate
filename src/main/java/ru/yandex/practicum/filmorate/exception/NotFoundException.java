@@ -4,4 +4,8 @@ public class NotFoundException extends RuntimeException {
     public NotFoundException(String s) {
         super(s);
     }
+
+    public NotFoundException(String entity, long id) {
+        super(entity + " id:" + id + " not found");
+    }
 }
