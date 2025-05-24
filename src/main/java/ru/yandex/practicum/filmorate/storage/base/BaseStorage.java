@@ -10,6 +10,7 @@ import org.springframework.jdbc.support.KeyHolder;
 import java.sql.PreparedStatement;
 import java.sql.Statement;
 import java.util.Collection;
+import java.util.Map;
 import java.util.Optional;
 
 
@@ -55,5 +56,18 @@ public abstract class BaseStorage<T> {
             return ps;
         }, keyHolder);
         return keyHolder.getKeyAs(clazz);
+    }
+
+    protected Map<String, Object> insertAndReturnKeys(String sql, Object... args) {
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+
+        jdbcTemplate.update(connection -> {
+            PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+            for (int i = 0; i < args.length; i++) {
+                ps.setObject(i + 1, args[i]);
+            }
+            return ps;
+        }, keyHolder);
+        return keyHolder.getKeys();
     }
 }

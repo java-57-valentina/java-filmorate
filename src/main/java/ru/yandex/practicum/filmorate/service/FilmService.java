@@ -89,4 +89,8 @@ public class FilmService {
                 .map(FilmMapper::mapToFilmDto)
                 .collect(Collectors.toList());
     }
+
+    public void delete(Long id) {
+        filmStorage.deleteFilm(id);
+    }
 }

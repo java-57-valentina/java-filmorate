@@ -71,6 +71,17 @@ public class FilmDbStorageTest {
     }
 
     @Test
+    void delete() {
+        Film created = storage.save(film1);
+        storage.deleteFilm(created.getId());
+        String message = "Film id:" + created.getId() + " not found";
+
+        assertThatThrownBy(() -> storage.checkFilmExists(created.getId()))
+                .isInstanceOf(NotFoundException.class)
+                .hasMessageContaining(message);
+    }
+
+    @Test
     void getNonExisting() {
         Long nonExistentId = 100500L;
         NotFoundException exception = assertThrows(

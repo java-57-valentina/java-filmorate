@@ -3,13 +3,13 @@ package ru.yandex.practicum.filmorate.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.dto.UserCreateDto;
-import ru.yandex.practicum.filmorate.dto.UserResponseDto;
-import ru.yandex.practicum.filmorate.dto.UserUpdateDto;
+import ru.yandex.practicum.filmorate.dto.*;
 import ru.yandex.practicum.filmorate.exception.EmailAlreadyTakenException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
+import ru.yandex.practicum.filmorate.mapper.FilmMapper;
 import ru.yandex.practicum.filmorate.mapper.UserMapper;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.util.Collection;
@@ -22,6 +22,7 @@ import java.util.stream.Collectors;
 public class UserService {
 
     private final UserStorage userStorage;
+    private final FilmStorage filmStorage;
 
     public Collection<UserResponseDto> getAll() {
         return userStorage.getAll().stream()
@@ -104,5 +105,19 @@ public class UserService {
                 .toList();
         log.debug("User id:{} has {} friends", id, friends.size());
         return friends;
+    }
+
+
+    public Collection<FilmResponseDto> getRecommendations(Long id) {
+        Set<Long> filmIds = userStorage.getRecommendationsIds(id);
+        log.debug("Recommendations Ids for user {}: {}", id, filmIds);
+        return filmStorage.getFilmSet(filmIds)
+                .stream()
+                .map(FilmMapper::mapToFilmDto)
+                .toList();
+    }
+
+    public void delete(Long id) {
+        userStorage.deleteUser(id);
     }
 }

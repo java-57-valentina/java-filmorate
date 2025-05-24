@@ -57,6 +57,21 @@ public class FilmDbStorage extends BaseStorage<Film> implements FilmStorage {
             "LEFT JOIN mpa m ON m.id = f.mpa_id\n" +
             "WHERE f.id = ?;";
 
+    private static final String SQL_SELECT_SET = """
+            SELECT
+                f.*,
+                m.name AS mpa_name,
+                (
+                    SELECT STRING_AGG(CONCAT(g.id, ':', g.name), '|' ORDER BY g.id)
+                    FROM film_genre fg
+                    JOIN genres g ON fg.genre_id = g.id
+                    WHERE fg.film_id = f.id
+                ) AS genres_data
+            FROM films f
+            LEFT JOIN mpa m ON m.id = f.mpa_id
+            WHERE f.id IN (%s)
+            """;
+
     private static final String SQL_CHECK_FILM_EXISTS =
             "SELECT COUNT(*) > 0 FROM films WHERE id = ?";
     private static final String SQL_INSERT = """
@@ -156,6 +171,8 @@ public class FilmDbStorage extends BaseStorage<Film> implements FilmStorage {
 
     private final DirectorStorage directorStorage;
 
+    private static final String SQL_DELETE_FILM = "DELETE FROM films WHERE id = ?";
+
     @Autowired
     public FilmDbStorage(JdbcTemplate jdbcTemplate, FilmRowMapper rowMapper, DirectorStorage directorStorage) {
         super(jdbcTemplate, rowMapper);
@@ -176,10 +193,22 @@ public class FilmDbStorage extends BaseStorage<Film> implements FilmStorage {
     }
 
     @Override
+    public Collection<Film> getFilmSet(Set<Long> ids) {
+        String sqlParams = String.join(",", Collections.nCopies(ids.size(), "?"));
+
+        return super.getMany(String.format(SQL_SELECT_SET, sqlParams), ids.toArray());
+    }
+
+    @Override
     public void checkFilmExists(Long id) {
         boolean exists = exists(SQL_CHECK_FILM_EXISTS, id);
         if (!exists)
             throw new NotFoundException("Film id:" + id + " not found");
+    }
+
+    @Override
+    public void deleteFilm(Long id) {
+        update(SQL_DELETE_FILM, id);
     }
 
     @Override
