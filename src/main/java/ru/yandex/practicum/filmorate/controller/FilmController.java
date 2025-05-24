@@ -79,10 +79,12 @@ public class FilmController {
 
     @GetMapping("/popular")
     public Collection<FilmResponseDto> getTopFilms(
-            @RequestParam(defaultValue = "10") int count) {
-        if (count <= 0)
+            @RequestParam(required = false) Integer count,
+            @RequestParam(required = false) Short genreId,
+            @RequestParam(required = false) Short year) {
+        if (count != null && count <= 0)
             throw new ValidationException("count > 0");
-        return filmService.getTop(count);
+        return filmService.getTop(count, genreId, year);
     }
 
     private void validate(FilmDto film) throws ValidationException {

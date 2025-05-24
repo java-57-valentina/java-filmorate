@@ -100,6 +100,80 @@ public class FilmDbStorage extends BaseStorage<Film> implements FilmStorage {
             LIMIT ?;
             """;
 
+    private static final String SQL_SELECT_POPULAR_BY_GENRE = """
+            SELECT
+                f.*,
+                m.name AS mpa_name,
+                COUNT(l.film_id) as likes_count,
+                (
+                    SELECT STRING_AGG(CONCAT(g.id, ':', g.name), '|' ORDER BY g.id)
+                    FROM film_genre fg
+                    JOIN genres g ON fg.genre_id = g.id
+                    WHERE fg.film_id = f.id
+                ) AS genres_data
+            FROM (
+                SELECT fg.film_id
+                FROM film_genre fg
+                WHERE fg.genre_id = ?
+                ) AS fbg
+            JOIN films f ON f.id = fbg.film_id
+            LEFT JOIN mpa m ON m.id = f.mpa_id
+            LEFT JOIN likes l ON fbg.film_id = l.film_id
+            GROUP BY
+               f.id, f.title, f.description, f.duration, f.release_date, f.mpa_id, m.name
+            ORDER BY likes_count DESC
+            """;
+
+    private static final String SQL_SELECT_POPULAR_BY_YEAR = """
+            SELECT
+                fby.*,
+                m.name AS mpa_name,
+                COUNT(l.film_id) as likes_count,
+                (
+                    SELECT STRING_AGG(CONCAT(g.id, ':', g.name), '|' ORDER BY g.id)
+                    FROM film_genre fg
+                    JOIN genres g ON fg.genre_id = g.id
+                    WHERE fg.film_id = fby.id
+                ) AS genres_data
+            FROM (
+                SELECT f.*
+                FROM films f
+                GROUP BY f.id
+                HAVING EXTRACT(YEAR FROM f.release_date) = ?
+                ) AS fby
+            LEFT JOIN mpa m ON m.id = fby.mpa_id
+            LEFT JOIN likes l ON fby.id = l.film_id
+            GROUP BY
+               fby.id, fby.title, fby.description, fby.duration, fby.release_date, fby.mpa_id, m.name
+            ORDER BY likes_count DESC
+            """;
+
+    private static final String SQL_SELECT_POPULAR_BY_GENRE_AND_YEAR = """
+            SELECT
+                fby.*,
+                m.name AS mpa_name,
+                COUNT(l.film_id) as likes_count,
+                (
+                    SELECT STRING_AGG(CONCAT(g.id, ':', g.name), '|' ORDER BY g.id)
+                    FROM film_genre fg
+                    JOIN genres g ON fg.genre_id = g.id
+                    WHERE fg.film_id = fby.id
+                ) AS genres_data
+            FROM (
+                SELECT f.*
+                FROM films f
+                JOIN film_genre fg ON fg.film_id = f.id
+                WHERE fg.genre_id = ?
+                GROUP BY f.id
+                HAVING EXTRACT(YEAR FROM f.release_date) = ?
+                ) AS fby
+            LEFT JOIN mpa m ON m.id = fby.mpa_id
+            LEFT JOIN likes l ON fby.id = l.film_id
+            GROUP BY
+               fby.id, fby.title, fby.description, fby.duration, fby.release_date, fby.mpa_id, m.name
+            ORDER BY likes_count DESC
+            """;
+
     private static final String SQL_DELETE_FILM = "DELETE FROM films WHERE id = ?";
 
     @Autowired
@@ -185,8 +259,36 @@ public class FilmDbStorage extends BaseStorage<Film> implements FilmStorage {
     }
 
     @Override
-    public Collection<Film> getTop(int count) {
-        return getMany(SQL_SELECT_POPULAR, count);
+    public Collection<Film> getTop(Integer count, Short genreId, Short year) {
+        if (genreId == null && year == null) {
+            if (count == null) {
+                count = 10;
+            }
+            return getMany(SQL_SELECT_POPULAR, count);
+        }
+
+        String sqlQuery;
+        List<Object> args = new ArrayList<>();
+
+        if (genreId == null) {
+            sqlQuery = SQL_SELECT_POPULAR_BY_YEAR;
+            args.add(year);
+        } else {
+            checkGenresExist(Set.of(genreId));
+            args.add(genreId);
+            if (year == null) {
+                sqlQuery = SQL_SELECT_POPULAR_BY_GENRE;
+            } else {
+                sqlQuery = SQL_SELECT_POPULAR_BY_GENRE_AND_YEAR;
+                args.add(year);
+            }
+        }
+        if (count == null) {
+            return getMany(sqlQuery, args.toArray());
+        } else {
+            args.add(count);
+            return getMany(sqlQuery + " LIMIT ?", args.toArray());
+        }
     }
 
     private void saveFilmGenres(Film film) {
