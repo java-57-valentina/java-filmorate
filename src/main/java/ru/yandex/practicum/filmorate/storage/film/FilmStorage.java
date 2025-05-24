@@ -17,4 +17,6 @@ public interface FilmStorage {
     Collection<Film> getTop(int count);
 
     void checkFilmExists(Long filmId);
+
+    public Collection<Film> getSortedFilmsByDirector(Integer directorId, String sortBy);
 }

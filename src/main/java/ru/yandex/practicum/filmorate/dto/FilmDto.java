@@ -42,4 +42,5 @@ public class FilmDto {
     private MpaDto mpa;
 
     private Collection<GenreDto> genres = null;
+    private Collection<DirectorDto> directors = null;
 }

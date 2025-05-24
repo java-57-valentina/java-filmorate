@@ -27,6 +27,12 @@ public class FilmMapper {
                             .collect(Collectors.toSet()));
         }
 
+
+        if (request.getDirectors() != null) {
+            film.setDirectors(request.getDirectors().stream()
+                    .map(DirectorMapper::mapToDirector).collect(Collectors.toSet()));
+        }
+
         return film;
     }
 
@@ -42,7 +48,8 @@ public class FilmMapper {
                 mpa,
                 film.getGenres().stream()
                         .map(GenreMapper::mapToGenreDto)
-                        .collect(Collectors.toList())
+                        .collect(Collectors.toList()),
+                film.getDirectors()
         );
     }
 }

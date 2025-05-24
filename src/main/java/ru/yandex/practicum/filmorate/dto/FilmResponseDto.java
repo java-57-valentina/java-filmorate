@@ -2,6 +2,7 @@ package ru.yandex.practicum.filmorate.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import ru.yandex.practicum.filmorate.model.Director;
 
 import java.time.LocalDate;
 import java.util.Collection;
@@ -16,4 +17,5 @@ public class FilmResponseDto {
     private LocalDate releaseDate;
     private MpaDto mpa;
     private Collection<GenreDto> genres;
+    private Collection<Director> directors;
 }

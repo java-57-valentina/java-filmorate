@@ -77,6 +77,12 @@ public class FilmController {
         return filmService.getTop(count);
     }
 
+    @GetMapping("/director/{directorId}")
+    public Collection<FilmResponseDto> getSortedFilmsByDirector(@PathVariable Integer directorId,
+                                                                @RequestParam String sortBy) {
+        return filmService.getSortedFilmsByDirector(directorId, sortBy);
+    }
+
     private void validate(FilmDto film) throws ValidationException {
         if (film.getReleaseDate() == null)
             return;
