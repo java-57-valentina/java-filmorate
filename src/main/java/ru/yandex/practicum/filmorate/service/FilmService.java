@@ -80,7 +80,7 @@ public class FilmService {
                 .collect(Collectors.toSet()));
 
         Film updated = filmStorage.update(origin);
-        log.info("{}", updated);
+        log.info("Film with id: {} updated: {}", updated.getId(), updated);
         return FilmMapper.mapToFilmDto(updated);
     }
 
