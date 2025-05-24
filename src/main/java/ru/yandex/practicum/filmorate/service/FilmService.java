@@ -20,8 +20,8 @@ public class FilmService {
     private final FilmStorage filmStorage;
     private final MpaStorage mpaStorage;
 
-    public Collection<FilmResponseDto> getTop(int count) {
-        return filmStorage.getTop(count).stream()
+    public Collection<FilmResponseDto> getTop(Integer count, Short genreId, Short year) {
+        return filmStorage.getTop(count, genreId, year).stream()
                 .map(FilmMapper::mapToFilmDto)
                 .collect(Collectors.toList());
     }

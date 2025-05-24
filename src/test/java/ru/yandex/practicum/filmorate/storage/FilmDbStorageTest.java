@@ -21,7 +21,7 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
 @JdbcTest
 @AutoConfigureTestDatabase
@@ -30,8 +30,10 @@ public class FilmDbStorageTest {
 
     @Autowired
     private FilmDbStorage storage;
-     private static final Film film1 = new Film("Film1 Name", "Boring film", 120, LocalDate.of(1991, 1, 1), new Mpa((short) 1, "f"));
-     private static final Film film2 = new Film("Film2 Name", "Interesting film", 120, LocalDate.of(1991, 1, 1), new Mpa((short) 1,"2"));
+    private static final Film film1 = new Film("Film1 Name", "Boring film", 120, LocalDate.of(1991, 1, 1), new Mpa((short) 1, "f"));
+    private static final Film film2 = new Film("Film2 Name", "Interesting film", 120, LocalDate.of(2010, 1, 1), new Mpa((short) 1,"2"));
+    private static final Film film3 = new Film("Film3 Name", "Just a film", 120, LocalDate.of(2000, 1, 1), new Mpa((short) 1,"2"));
+    private static final Film film4 = new Film("Film4 Name", "Just a film", 120, LocalDate.of(1991, 1, 1), new Mpa((short) 1,"2"));
 
 
     @Test
@@ -98,5 +100,60 @@ public class FilmDbStorageTest {
 
         Collection<Film> films = storage.getAll();
         assertThat(films).hasSize(2);
+    }
+
+    @Test
+    void getTop() {
+        Film created = storage.save(film1);
+        long film1Id = created.getId();
+        created.setGenres(List.of(
+                new Genre((short) 1, "x"),
+                new Genre((short) 2, "x")));
+        storage.update(created);
+        created = storage.save(film2);
+        created.setGenres(List.of(
+                new Genre((short) 2, "x"),
+                new Genre((short) 3, "x")));
+        storage.update(created);
+        created = storage.save(film3);
+        created.setGenres(List.of(
+                new Genre((short) 4, "x")));
+        storage.update(created);
+        created = storage.save(film4);
+        long film4Id = created.getId();
+        created.setGenres(List.of(
+                new Genre((short) 1, "x"),
+                new Genre((short) 2, "x")));
+        storage.update(created);
+
+        Collection<Film> topFilms = storage.getTop(10, (short) 1, null);
+        List<Long> topFilmsIds = topFilms
+                .stream()
+                .map(Film::getId)
+                .toList();
+
+        assertEquals(2, topFilms.size());
+        assertTrue(topFilmsIds.contains(film1Id));
+        assertTrue(topFilmsIds.contains(film4Id));
+
+        topFilms = storage.getTop(10, null, (short) 1991);
+        topFilmsIds = topFilms
+                .stream()
+                .map(Film::getId)
+                .toList();
+
+        assertEquals(2, topFilms.size());
+        assertTrue(topFilmsIds.contains(film1Id));
+        assertTrue(topFilmsIds.contains(film4Id));
+
+        topFilms = storage.getTop(10, (short) 1, (short) 1991);
+        topFilmsIds = topFilms
+                .stream()
+                .map(Film::getId)
+                .toList();
+
+        assertEquals(2, topFilms.size());
+        assertTrue(topFilmsIds.contains(film1Id));
+        assertTrue(topFilmsIds.contains(film4Id));
     }
 }
