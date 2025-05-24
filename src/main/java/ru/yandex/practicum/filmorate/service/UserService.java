@@ -116,7 +116,7 @@ public class UserService {
                 .map(FilmMapper::mapToFilmDto)
                 .toList();
     }
-  
+
     public void delete(Long id) {
         userStorage.deleteUser(id);
     }
