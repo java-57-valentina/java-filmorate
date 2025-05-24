@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import ru.yandex.practicum.filmorate.dto.FilmResponseDto;
 import ru.yandex.practicum.filmorate.dto.UserCreateDto;
 import ru.yandex.practicum.filmorate.dto.UserResponseDto;
 import ru.yandex.practicum.filmorate.dto.UserUpdateDto;
@@ -75,5 +76,10 @@ public class UserController {
     @ResponseStatus(HttpStatus.OK)
     public Collection<UserResponseDto> getCommonFriends(@PathVariable Long id, @PathVariable Long otherId) {
         return userService.getCommonFriends(id, otherId);
+    }
+
+    @GetMapping("/{id}/recommendations")
+    public Collection<FilmResponseDto> getRecommendations(@PathVariable Long id) {
+        return userService.getRecommendations(id);
     }
 }
