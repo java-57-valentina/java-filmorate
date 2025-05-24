@@ -105,4 +105,8 @@ public class UserService {
         log.debug("User id:{} has {} friends", id, friends.size());
         return friends;
     }
+
+    public void delete(Long id) {
+        userStorage.deleteUser(id);
+    }
 }

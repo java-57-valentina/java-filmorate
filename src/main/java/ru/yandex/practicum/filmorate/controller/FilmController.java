@@ -2,6 +2,7 @@ package ru.yandex.practicum.filmorate.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.dto.CreateInfo;
@@ -53,6 +54,13 @@ public class FilmController {
         FilmResponseDto updated = filmService.update(film);
         log.info("Film id:{} was updated: {}", updated.getId(), updated);
         return updated;
+    }
+
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void delete(@PathVariable Long id) {
+        filmService.delete(id);
+        log.info("Film id:{} was removed", id);
     }
 
     @PutMapping("/{id}/like/{userId}")

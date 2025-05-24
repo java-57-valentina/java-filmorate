@@ -56,7 +56,7 @@ public class UserDbStorage extends BaseStorage<User> implements UserStorage {
             """;
     private static final String SQL_CHECK_USER_EXISTS = "SELECT EXISTS(SELECT 1 FROM users WHERE id = ?)";
     private static final String SQL_CHECK_EMAIL_USED = "SELECT EXISTS(SELECT 1 FROM users WHERE email = ?)";
-
+    private static final String SQL_DELETE_USER = "DELETE FROM users WHERE id = ?";
 
 
     public UserDbStorage(JdbcTemplate jdbcTemplate, UserRowMapper rowMapper) {
@@ -115,6 +115,11 @@ public class UserDbStorage extends BaseStorage<User> implements UserStorage {
     @Override
     public boolean isEmailUsed(String email) {
         return exists(SQL_CHECK_EMAIL_USED, email);
+    }
+
+    @Override
+    public void deleteUser(Long id) {
+        update(SQL_DELETE_USER, id);
     }
 
     @Override

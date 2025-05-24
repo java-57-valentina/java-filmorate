@@ -25,4 +25,6 @@ public interface UserStorage {
     void removeFriend(Long id, Long friendId);
 
     boolean isEmailUsed(String email);
+
+    void deleteUser(Long id);
 }
